@@ -1,0 +1,124 @@
+% Imports
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry} 
+\usepackage{
+    amsmath, amsthm, amssymb, verbatim
+}
+
+% Begin document
+\setlength{\parindent}{0pt}
+\begin{document}
+
+% Title
+\title{Econometrics II Workshop}
+\author{Arturo Soberon}
+\date{}
+\maketitle
+
+% Main
+\setcounter{section}{0}
+\section{Bash}
+Bash is a Unix shell used in Linux and Mac OS that lets you interact with
+the operating system through typed commands. We will mainly use it to run
+git commands, but there are many other useful commands worth noting.
+
+\begin{enumerate}
+    \item \texttt{pwd} - Print Working Directory \\
+        Prints the directory you're currently on.
+    \item \texttt{ls} - List \\
+        List the items contained in a given directory.
+    \item \texttt{cd} - Change Directory \\
+        Move to another working directory.
+    \item \texttt{mkdir} - Make Directory \\
+        Create a new directory with the specified name.
+    \item \texttt{touch} - Create File \\
+        Create an empty file or update the timestamp of an existing file.
+    \item \texttt{mv} - Move/Rename \\
+        Move a file or directory to a new location or rename it.
+    \item \texttt{cp} - Copy \\
+        Copy files or directories to a specified location.
+    \item \texttt{rm} - Remove \\
+        Delete files or directories (use \texttt{-r} for recursive deletion).
+    \item \texttt{echo} - Print Text \\
+        Print text or the value of a variable to the terminal.
+    \item \texttt{cat} - Concatenate and Display \\
+        Display the content of a file or combine multiple files.
+\end{enumerate}
+
+\pagebreak
+We can use these commands as follows (note that code starting with
+\texttt{\$} is a common convention to indicate Bash commands):
+
+\begin{verbatim}
+# Start off by printing our current working directory
+$ pwd
+/Users/MyUser
+
+# List the files and directories contained in /MyUser
+$ ls
+Applications    Downloads    Music       bin
+Desktop         Library      Pictures    miniconda3
+Documents       Public
+
+# We can pass flags to most commands to access additional options
+$ ls -l  # List items with detailed information
+drwxr-xr-x   3 MyUser  staff    96 Jan 13 09:09 Applications
+drwx------@  8 MyUser  staff   256 Jan 21 19:43 Desktop
+drwx------+ 12 MyUser  staff   384 Jan 22 08:45 Documents
+drwx------+  9 MyUser  staff   288 Jan 21 17:03 Downloads
+drwx------@ 98 MyUser  staff  3136 Aug  5 14:33 Library
+drwx------+  4 MyUser  staff   128 Dec 17  2023 Music
+drwx------+  5 MyUser  staff   160 Dec 24 12:57 Pictures
+drwxr-xr-x+  4 MyUser  staff   128 Nov 30  2023 Public
+drwxr-xr-x@  2 MyUser  staff    64 Oct 14 08:16 bin
+drwxr-xr-x  17 MyUser  staff   544 Nov 30  2023 miniconda3
+
+# Let's move into /Documents using a relative path
+$ cd ./Documents  # "." represents the current directory
+
+# We could have achieved the same thing using an absolute path
+$ cd /Users/MyUser/Documents/
+
+# We can create a new directory
+$ mkdir my-project
+
+# We can create a new file inside the new folder
+$ touch my-project/file.txt
+
+# Let's move file.txt back to Documents and rename it
+$ mv my-project/file.txt renamed-file.txt
+
+# Let's copy renamed-file.txt back into my-project and rename it
+$ cp renamed-file.txt my-project/copied-file.txt
+\end{verbatim}
+
+\pagebreak
+\begin{verbatim}
+# Let's delete renamed-file.txt
+$ rm renamed-file.txt
+
+# We can pass some text to a file with pipes
+$ echo "Hello world\!" > my-project/copied-file.txt
+
+# Let's display the file's contents to check if it worked
+$ cat my-project/copied-file.txt
+Hello world!
+
+# We can append new text to the file >>
+$ echo "A new line of text" >> my-project/copied-file.txt
+
+# Let's see how the file changed
+$ cat my-project/copied-file.txt
+Hello world!
+A new line of text
+
+# We can replace the file's contents using a single pipe
+$ echo "Starting over\!" > my-project/copied-file.txt
+
+# Instead of appending a new line, we overwrote the whole file
+$ cat my-project/copied-file.txt
+Starting over!
+\end{verbatim}
+
+% End document 
+\end{document}
