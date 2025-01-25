@@ -4,3 +4,6 @@
 # Ignore virtual environments
 econ/
 econ-test/
+
+# Ignore notebooks
+*.ipynb
