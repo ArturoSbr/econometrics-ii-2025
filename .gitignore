@@ -1,5 +1,6 @@
 # Ignore all files starting with .
 .*
 
-# Ignore virtual environment directory (named `econ`)
+# Ignore virtual environments
 econ/
+econ-test/
