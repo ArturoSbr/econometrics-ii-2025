@@ -1,0 +1,106 @@
+name: Model Validation
+
+on:
+  push:
+    branches:
+      - "assignment/did*"
+      - "assignment/fes*"
+      - "assignment/ivs*"
+      - "assignment/rdd*"
+      - "assignment/test*"
+
+jobs:
+  # Differrences in Differences
+  did:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'assignment/did')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Assert DID
+        working-directory: assignments/did/code
+        run: python tests.py
+
+  # Fixed Effects
+  fes:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'assignment/fes')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Assert FEs
+        working-directory: assignments/fes/code
+        run: python tests.py
+
+  # Instrumental Variables
+  ivs:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'assignment/ivs')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Assert IVs
+        working-directory: assignments/ivs/code
+        run: python tests.py
+
+  # Regression Discontinuity Design
+  rdd:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'assignment/rdd')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Assert RDD
+        working-directory: assignments/rdd/code
+        run: python tests.py
+
+  # Testing
+  test:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'assignment/test')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Assert IVs
+        working-directory: assignments/test/code
+        run: python tests.py
