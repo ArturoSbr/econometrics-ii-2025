@@ -87,7 +87,7 @@ jobs:
         run: python test-rdd.py
 
   # [TEST WORKFLOW] Randomized Controlled Trial
-  test:
+  rct:
     runs-on: ubuntu-latest
     if: startsWith(github.ref_name, 'assignment/rct')
     steps:
