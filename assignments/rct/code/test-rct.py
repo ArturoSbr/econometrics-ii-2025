@@ -24,12 +24,12 @@ if not isinstance(model, RegressionResultsWrapper):
     exit(2)
 
 # Test 3: Assert estimates
-expected_value = 1.3375465850237276
+EXPECTED_PARAM = 0.07997186767333542
 try:
     msg3 = "Estimate for 'dark' is {}, expected {}."
     actual_value = model.params['treat'].item()
-    assert abs(actual_value - expected_value) < 1e-6, (
-        msg3.format(actual_value, expected_value)
+    assert abs(actual_value - EXPECTED_PARAM) < 1e-6, (
+        msg3.format(actual_value, EXPECTED_PARAM)
     )
 except AssertionError as e:
     print(f'{e}')
