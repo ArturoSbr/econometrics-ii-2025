@@ -27,7 +27,7 @@ if not isinstance(model, RegressionResultsWrapper):
 EXPECTED_PARAM = 0.07997186767333542
 try:
     msg3 = "Estimate for 'dark' is {}, expected {}."
-    actual_value = model.params['treat'].item()
+    actual_value = model.params['dark'].item()
     assert abs(actual_value - EXPECTED_PARAM) < 1e-6, (
         msg3.format(actual_value, EXPECTED_PARAM)
     )
