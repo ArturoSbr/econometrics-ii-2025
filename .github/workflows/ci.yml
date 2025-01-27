@@ -1,4 +1,4 @@
-name: Model Validation
+name: Validate Model Estimates
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - "assignment/fes*"
       - "assignment/ivs*"
       - "assignment/rdd*"
-      - "assignment/test*"
+      - "assignment/rct*"
 
 jobs:
   # Differrences in Differences
@@ -27,7 +27,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert DID
         working-directory: assignments/did/code
-        run: python tests.py
+        run: python test-did.py
 
   # Fixed Effects
   fes:
@@ -46,7 +46,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert FEs
         working-directory: assignments/fes/code
-        run: python tests.py
+        run: python test-fes.py
 
   # Instrumental Variables
   ivs:
@@ -65,7 +65,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert IVs
         working-directory: assignments/ivs/code
-        run: python tests.py
+        run: python test-ivs.py
 
   # Regression Discontinuity Design
   rdd:
@@ -84,12 +84,12 @@ jobs:
           pip install -r requirements.txt
       - name: Assert RDD
         working-directory: assignments/rdd/code
-        run: python tests.py
+        run: python test-rdd.py
 
-  # Testing
+  # [TEST WORKFLOW] Randomized Controlled Trial
   test:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'assignment/test')
+    if: startsWith(github.ref_name, 'assignment/rct')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -102,5 +102,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Assert test module
-        working-directory: assignments/test/code
-        run: python tests.py
+        working-directory: assignments/rct/code
+        run: python test-rct.py
