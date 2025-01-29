@@ -132,12 +132,90 @@ clear history of modifications and experiment with new features without risking
 the integrity of preceding versions of your code.
 
 At its core, Git works like checkpoints in video games. That is, you can save
-your progress and go back to it any time you want. Additionally, you can set
-multiple checkpoints (as many as you want) so you can go back to revert your
-code to any point in time (not just the latest checkpoint). Moreover, Git
-allows you to explore \textit{alternative timelines} known as branches where
-you can explore and develop new features without affecting the functionality
-of previous versions.
+your progress and go back any time you want. Additionally, you can set multiple
+checkpoints (as many as you want) so you can go back to revert your code to any
+previous version (not just the latest checkpoint). Moreover, Git allows you to
+explore \textit{alternative timelines} known as \textit{branches} where you can
+develop new features without affecting the functionality of previous versions.
+
+Here are some of the main commands we'll be using.
+
+\begin{enumerate}
+
+    \item \texttt{git init} \\
+        Initializes a new Git repository in the current directory (hidden folder
+        named \texttt{.git}).
+
+    \item \texttt{git clone <repository-url>} \\
+        Clones an existing repository from a remote source (i.e., GitHub) to
+        your local machine.
+
+    \item \texttt{git add <file>} \\
+        Stages changes to the specified file(s) for the next commit.
+
+    \item \texttt{git commit -m "<message>"} \\
+        Commits the staged changes with a descriptive message.
+
+    \item \texttt{git status} \\
+        Shows the current status of the working directory, including staged,
+        unstaged, and untracked files.
+
+    \item \texttt{git log} \\
+        Displays the commit history of the repository. Use
+        \textttt{git log --oneline} for improved readability.
+
+    \item \texttt{git branch} \\
+        Lists all branches in the repository. Use git branch <branch-name>` to
+        create a new branch.
+
+    \item \texttt{git checkout <branch-name>} \\
+        Switches to the specified branch. Use
+        \texttt{git checkout -b <branch-name>} to create and switch to a new
+        branch using a single command.
+
+    \item \texttt{git merge <branch-name>} \\
+        Merges the specified branch into the current branch.
+
+    \item \texttt{git pull} \\
+        Fetches and integrates changes from the remote repository into the
+        current branch.
+
+    \item \texttt{git push} \\
+        Uploads your local commits to the remote repository.
+
+    \item \texttt{git remote -v} \\
+        Lists the remote repositories linked to the local repository.
+
+    \item \texttt{git stash} \\
+        Temporarily saves changes in your working directory that have not yet
+        been committed. Useful for switching to another branch without
+        committing your changes.
+
+    \item \texttt{git stash apply} \\
+        Reapplies the most recent stashed changes.
+
+    \item \texttt{git reset <file>} \\
+        Unstages a file (in other words, it undoes \texttt{git add <file>}).
+
+    \item \texttt{git revert <commit-hash>} \\
+        Creates a new commit that undoes the changes from the specified commit.
+
+    \item \texttt{git diff} \\
+        Shows the differences between the working directory and the staging
+        area.
+
+    \item \texttt{git rm <file>} \\
+        Removes a file from the working directory and stages its deletion (the
+        removal must be committed afterwards!).
+
+    \item \texttt{git tag <tag-name>} \\
+        Creates a tag to mark a specific point in the repository’s history.
+
+    \item \texttt{git fetch} \\
+        Downloads changes from the remote repository without integrating them
+        into the current branch.
+
+\end{enumerate}
 
 % End document 
 \end{document}
