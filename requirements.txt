@@ -1,4 +1,4 @@
-numpy==2.0.2
-pandas==2.2.3
-statsmodels==0.14.4
-linearmodels==6.1
+numpy==1.26.0
+pandas==1.5.0
+statsmodels==0.13.5
+linearmodels==5.3

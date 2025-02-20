@@ -3,23 +3,36 @@ Welcome! This is the repo where you'll find all the material seen in class.
 It is also the place you'll be pushing all your assignments to.
 
 This repo is meant to resemble a typical industry-grade project. This means
-you'll have to follow a few styling and coding guidelines for your work to be
-accepted.
+you'll have to pass a few tests for your code to be accepted.
 
 ## Why this workflow?
-In this class, you're expected to submit your code by opening a PR, passing
-a few builds and merging your branch into `main`. The goal of this workflow
-is to help you understand how code is shared in modern companies. It will
-get you used to:
+In this class, you're expected to submit your code by creating a new branch,
+pushing your changes and passing a few builds. This will enable you to merge
+your branch into `develop`, which will later be merged on to `main`. The goal of
+this workflow is to help you understand how code is written and shared in modern
+companies. It will familiarize you with:
 - Writing clean, consistent, and well-documented code;
 - Opening pull requests (PRs) to submit your work for review; and
-- Passing automated checks for code style and linting.
+- Passing builds.
 
 By following these guidelines, you won't be taken by surprise when someone
 asks you to open a PR to squash a bug or implement a new feature.
 
 ## Structure of this repo
-TO-DO
+```
+.
+├── .github           # Build configuration (ignore this)
+├── assignments       # Model assignments
+│   ├── did    
+│   ├── fes
+│   ├── ivs
+│   ├── rct
+│   └── rdd
+├── lecture-notes     # Lecture notes
+├── .gitignore        # Files ignored by git
+├── README.md         # Intro to this repo
+└── requirements.txt  # Install these libraries on your venv
+```
 
-## Contributing
+## Contributing (AKA submitting your homework)
 TO-DO
