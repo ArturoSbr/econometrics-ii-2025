@@ -27,7 +27,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert DID
         working-directory: assignments/did/code
-        run: python test-did.py
+        run: python grader.py
 
   # Fixed Effects
   fes:
@@ -46,7 +46,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert FEs
         working-directory: assignments/fes/code
-        run: python test-fes.py
+        run: python grader.py
 
   # Instrumental Variables
   ivs:
@@ -65,7 +65,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert IVs
         working-directory: assignments/ivs/code
-        run: python test-ivs.py
+        run: python grader.py
 
   # Regression Discontinuity Design
   rdd:
@@ -84,7 +84,7 @@ jobs:
           pip install -r requirements.txt
       - name: Assert RDD
         working-directory: assignments/rdd/code
-        run: python test-rdd.py
+        run: python grader.py
 
   # [TEST WORKFLOW] Randomized Controlled Trial
   rct:
@@ -101,6 +101,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Linting
+        run: flake8 --max-line-length=88
       - name: Assert RCT
         working-directory: assignments/rct/code
-        run: python test-rct.py
+        run: python grader.py
