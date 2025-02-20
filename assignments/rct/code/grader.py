@@ -1,5 +1,6 @@
 # Imports
-import os, sys
+import os
+import sys
 import importlib.util
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 
