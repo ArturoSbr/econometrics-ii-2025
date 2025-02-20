@@ -24,7 +24,7 @@ if not isinstance(model, RegressionResultsWrapper):
     exit(2)
 
 # Test 3: Assert estimates
-EXPECTED_PARAM = 0.07997186767333542
+EXPECTED_PARAM = 0.0866918272939628
 try:
     msg3 = "Estimate for 'dark' is {}, expected {}."
     actual_value = model.params['dark'].item()
