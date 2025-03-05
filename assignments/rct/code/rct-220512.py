@@ -48,6 +48,3 @@ spec=sm.OLS(
 
 # Fit Model
 model=spec.fit()
-
-# View Results
-model.params['dark']
