@@ -1,34 +1,34 @@
-# Loading Libraries
+# Imports
 import os
-import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
 # Load data
-PATH = os.path.join('..','data','raw.csv')
-df=pd.read_csv(PATH)
+PATH = os.path.join('..', 'data', 'raw.csv')
+df = pd.read_csv(PATH)
 
-# Rename Columns
-df.columns=['id', 'dark', 'view','time','purchase','mobile','location']
+# Rename columns
+df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
-# Map columns to numeric type
+# Map columns to numeric dtypes
 df.replace(
     to_replace={
-        'dark':{'A':'0','B':'1'},
-        'mobile':{'Mobile':'1', 'Desktop':'0'},
-        'purchase':{'No':'0','Yes':'1'},
-        'location':{'Northern Ireland':'Ireland'}
-        }
-,inplace=True)
+        'dark': {'A': '0', 'B': '1'},
+        'mobile': {'Mobile': '1', 'Desktop': '0'},
+        'purchase': {'No': '0', 'Yes': '1'},
+        'location': {'Northern Ireland': 'Ireland'}
+    },
+    inplace=True
+)
 
-# Convert  strings -> ints
-df[['dark','mobile','purchase']]=df[['dark','mobile','purchase']].astype(int)
+# Convert strings -> ints
+df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)
 
-# Set location to lowercase
-df['location']=df['location'].str.lower()
+# Set `location`` to lowercase
+df['location'] = df['location'].str.lower()
 
-# one-hot encoding
-df=pd.get_dummies(
+# One-hot encoding
+df = pd.get_dummies(
     data=df,
     prefix='',
     prefix_sep='',
@@ -36,15 +36,15 @@ df=pd.get_dummies(
     dtype=int
 )
 
-# Assign a contant
-df['const']=1
+# Constant
+df['const'] = 1
 
-# Declare Model
-spec=sm.OLS(
+# Declare model
+spec = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const','ireland','scotland','wales','dark']],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconst=True
 )
 
-# Fit Model
-model=spec.fit()
+# Fit model
+model = spec.fit()
