@@ -1,0 +1,5 @@
+numpy==2.2.0
+pandas==2.2.3
+statsmodels==0.14.4
+linearmodels==6.0.0
+flake8==7.0.0
