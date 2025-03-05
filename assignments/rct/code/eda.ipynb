@@ -1,0 +1,277 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Randomized Controlled Trials\n",
+    "\n",
+    "We'll be taking a look at an online retailer based in the United Kingdom. Our\n",
+    "goal is to estimate the causal effect of switching the user's interface to dark\n",
+    "on the probability of purchasing an item.\n",
+    "\n",
+    "We will fit the following model:\n",
+    "\n",
+    "$$ E(Y_i | X_i) = X_i^T \\gamma + \\tau D_i$$\n",
+    "\n",
+    "where $X_i$ are controls and $D_i$ indicates $i$'s treatment status.\n",
+    "\n",
+    "---\n",
+    "\n",
+    "## Imports"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import statsmodels.api as sm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Exploratory Data Analysis\n",
+    "\n",
+    "Load data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "PATH = os.path.join('..', 'data', 'raw.csv')\n",
+    "df = pd.read_csv(PATH)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "View data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Check for nulls"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.isna().sum()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Check data types"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.dtypes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Clean data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Rename columns\n",
+    "df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']\n",
+    "\n",
+    "# Map columns to numeric dtypes\n",
+    "df.replace(\n",
+    "    to_replace={\n",
+    "        'dark': {'A': '0', 'B': '1'},\n",
+    "        'mobile': {'Mobile': '1', 'Desktop': '0'},\n",
+    "        'purchase': {'No': '0', 'Yes': '1'},\n",
+    "        'location': {'Northern Ireland': 'Ireland'}\n",
+    "    },\n",
+    "    inplace=True\n",
+    ")\n",
+    "\n",
+    "# Convert strings -> ints\n",
+    "df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)\n",
+    "\n",
+    "# Set `location`` to lowercase\n",
+    "df['location'] = df['location'].str.lower()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Encode categorical variables to binary columns (also known as One-Hot Encoding)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# One-hot encoding\n",
+    "df = pd.get_dummies(\n",
+    "    data=df,\n",
+    "    prefix='',\n",
+    "    prefix_sep='',\n",
+    "    columns=['location'],\n",
+    "    dtype=int\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Feature engineering\n",
+    "\n",
+    "- Create interaction term\n",
+    "- Assign a constant"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Interaction\n",
+    "df['dark_mobile'] = df['dark'].multiply(df['mobile'])\n",
+    "\n",
+    "# Constant\n",
+    "df['const'] = 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Fitting a linear model\n",
+    "\n",
+    "Declare linear model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Declare specification\n",
+    "spec = sm.OLS(\n",
+    "    endog=df['purchase'],\n",
+    "    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark', 'dark_mobile']],\n",
+    "    hasconst=True\n",
+    ")\n",
+    "\n",
+    "# Fit model\n",
+    "model = spec.fit()\n",
+    "\n",
+    "# View results\n",
+    "model.summary()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- Interaction term is not significant (remove it)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Fitting a parsimonious model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Declare model\n",
+    "spec2 = sm.OLS(\n",
+    "    endog=df['purchase'],\n",
+    "    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction\n",
+    "    hasconst=True\n",
+    ")\n",
+    "\n",
+    "# Fit model\n",
+    "model2 = spec2.fit()\n",
+    "\n",
+    "# View results\n",
+    "model2.summary()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "econ",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
