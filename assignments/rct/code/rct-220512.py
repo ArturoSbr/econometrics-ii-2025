@@ -24,7 +24,7 @@ df.replace(
 # Convert  strings -> ints
 df[['dark','mobile','purchase']]=df[['dark','mobile','purchase']].astype(int)
 
-# set location to lowercase
+# Set location to lowercase
 df['location']=df['location'].str.lower()
 
 # one-hot encoding
