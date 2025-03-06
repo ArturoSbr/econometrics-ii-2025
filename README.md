@@ -29,9 +29,11 @@ asks you to open a PR to squash a bug or implement a new feature.
 │   ├── rct
 │   └── rdd
 ├── lecture-notes     # Lecture notes
+├── .flake8           # Flake8 (linting) settings
 ├── .gitignore        # Files ignored by git
 ├── README.md         # Intro to this repo
-└── requirements.txt  # Install these libraries on your venv
+├── environment.yml   # Use this if you're using conda
+└── requirements.txt  # Use this if you're using venv
 ```
 
 ## Contributing (AKA submitting your homework)
