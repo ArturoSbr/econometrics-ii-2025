@@ -1,8 +1,9 @@
+# Imports
 import os
 import pandas as pd
 import statsmodels.api as sm
 
-# Define PATH and read data
+# Load data
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
 
@@ -35,32 +36,15 @@ df = pd.get_dummies(
     dtype=int
 )
 
-# Interaction
-df['dark_mobile'] = df['dark'].multiply(df['mobile'])
-
 # Constant
 df['const'] = 1
 
-# Declare specification
+# Declare model
 spec = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark', 'dark_mobile']],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconst=True
 )
 
 # Fit model
 model = spec.fit()
-
-# Declare model
-spec2 = sm.OLS(
-    endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
-    hasconst=True
-)
-
-# Fit model
-model2 = spec2.fit()
-
-# View results
-print(model.summary())
-print(model2.summary())
