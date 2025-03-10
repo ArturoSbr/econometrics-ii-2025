@@ -1,0 +1,55 @@
+#Imports
+import os
+import numpy as np
+import pandas as pd
+import statsmodels.api as sm
+
+
+#Read Data
+PATH = os.path.join('..', 'data', 'raw.csv')
+df = pd.read_csv(PATH)
+
+#Clean Data
+# Rename columns
+df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
+
+# Map columns to numeric dtypes
+df.replace(
+    to_replace={
+        'dark': {'A': '0', 'B': '1'},
+        'mobile': {'Mobile': '1', 'Desktop': '0'},
+        'purchase': {'No': '0', 'Yes': '1'},
+        'location': {'Northern Ireland': 'Ireland'}
+    },
+    inplace=True
+)
+
+# Convert strings -> ints
+df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)
+
+# Set `location`` to lowercase
+df['location'] = df['location'].str.lower()
+
+# One-hot encoding
+df = pd.get_dummies(
+    data=df,
+    prefix='',
+    prefix_sep='',
+    columns=['location'],
+    dtype=int
+)
+
+# Constant
+df['const'] = 1
+
+#Linear model
+
+# Declare model
+spec = sm.OLS(
+    endog=df['purchase'],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
+    hasconst=True
+)
+
+# Fit model
+model = spec.fit()
