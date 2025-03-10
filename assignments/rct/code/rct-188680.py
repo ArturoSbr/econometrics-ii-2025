@@ -1,14 +1,12 @@
-#Imports
+# Imports
 import os
 import pandas as pd
 import statsmodels.api as sm
 
-
-#Read Data
+# Read Data
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
 
-#Clean Data
 # Rename columns
 df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
@@ -41,12 +39,10 @@ df = pd.get_dummies(
 # Constant
 df['const'] = 1
 
-#Linear model
-
 # Declare model
 spec = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconst=True
 )
 
