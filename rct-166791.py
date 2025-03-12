@@ -32,7 +32,7 @@ X1 = sm.add_constant(
 spec = sm.OLS(
     endog=df['purchase'],
     exog=df[['ireland', 'scotland', 'wales', 'dark']].assign(
-        const = 1
+        const=1
     ),
     hasconst=True
 )
