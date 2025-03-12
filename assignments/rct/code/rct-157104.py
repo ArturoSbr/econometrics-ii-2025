@@ -1,15 +1,14 @@
 # Imports
 import os
-import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
 # Load data
-PATH=os.path.join('..', 'data', 'raw.csv')
-df=pd.read_csv(PATH)
+PATH = os.path.join('..', 'data', 'raw.csv')
+df = pd.read_csv(PATH)
 
-    # Rename columns
-df.columns=['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
+# Rename columns
+df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
 # Map columns to numeric types
 df.replace(
@@ -23,12 +22,12 @@ df.replace(
 )
 
 # Convert strings -> ints
-df[['dark', 'mobile', 'purchase']]=df[['dark', 'mobile', 'purchase']].astype(int)
+df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)
 # A minusculas
-df['location']=df['location'].str.lower()
+df['location'] = df['location'].str.lower()
 
 # One-hot encoding
-df=pd.get_dummies(
+df = pd.get_dummies(
     data=df,
     prefix='',
     prefix_sep='',
@@ -37,33 +36,33 @@ df=pd.get_dummies(
 )
 
 # Interaction
-df['dark_mobile']=df['dark'].multiply(df['mobile'])
+df['dark_mobile'] = df['dark'].multiply(df['mobile'])
 
 # Constant
-df['const']=1
+df['const'] = 1
 
 # Declare specification
-spec=sm.OLS(
+spec = sm.OLS(
     endog=df['purchase'],
     exog=df[['const', 'ireland', 'scotland', 'wales', 'dark', 'dark_mobile']],
     hasconst=True
 )
 
 # Fit model
-model=spec.fit()
+model = spec.fit()
 
 # View results
 model.summary()
 
 # Declare model
-spec2=sm.OLS(
-    endog=df['purchase'], 
+spec2 = sm.OLS(
+    endog=df['purchase'],
     exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
     hasconst=True
 )
 
 # Fit model
-model2=spec2.fit()
+model2 = spec2.fit()
 
 # View results
 model2.summary()
