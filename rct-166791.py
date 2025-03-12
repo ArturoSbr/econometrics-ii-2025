@@ -31,7 +31,10 @@ X1 = sm.add_constant(
 
 spec = sm.OLS(
     endog=df['purchase'],
-    exog=X1
+    exog=df[['ireland', 'scotland', 'wales', 'dark']].assign(
+        const = 1
+    ),
+    hasconst=True
 )
 model = spec.fit()
 model.summary()
