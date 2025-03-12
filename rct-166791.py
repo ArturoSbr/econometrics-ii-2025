@@ -23,7 +23,7 @@ df = pd.get_dummies(
     columns=['location'],
     dtype=int
 )
-df['dark_mobile'] = df['dark'].multiply(df['mobile'])
+df['dark_mobile'] = df['dark']*df['mobile']
 
 X1 = df[['ireland', 'scotland', 'wales', 'dark', 'dark_mobile']]
 X1 = sm.add_constant(X1)
