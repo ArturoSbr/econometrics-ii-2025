@@ -34,7 +34,7 @@ model = spec.fit()
 model.summary()
 spec2 = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const','ireland','scotland','wales','dark']],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconstant=True
 )
 model2 = spec2.fit()
