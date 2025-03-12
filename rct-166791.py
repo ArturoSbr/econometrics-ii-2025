@@ -26,7 +26,7 @@ df = pd.get_dummies(
 df['dark_mobile'] = df['dark']*df['mobile']
 
 X1 = sm.add_constant(
-    df[['ireland', 'scotland', 'wales', 'dark', 'dark_mobile']]
+    df[['ireland', 'scotland', 'wales', 'dark']]
     )
 
 spec = sm.OLS(
@@ -35,13 +35,3 @@ spec = sm.OLS(
 )
 model = spec.fit()
 model.summary()
-
-X2 = sm.add_constant(
-    df[['ireland', 'scotland', 'wales', 'dark']]
-    )
-spec2 = sm.OLS(
-    endog=df['purchase'],
-    exog=X2
-)
-model2 = spec2.fit()
-model2.summary()
