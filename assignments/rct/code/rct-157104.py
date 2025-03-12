@@ -10,7 +10,7 @@ df = pd.read_csv(PATH)
 # Rename columns
 df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
-# Map columns to numeric types
+# Map columns to numeric dtypes
 df.replace(
     to_replace={
         'dark': {'A': '0', 'B': '1'},
@@ -23,7 +23,8 @@ df.replace(
 
 # Convert strings -> ints
 df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)
-# A minusculas
+
+# Set `location`` to lowercase
 df['location'] = df['location'].str.lower()
 
 # One-hot encoding
@@ -35,34 +36,15 @@ df = pd.get_dummies(
     dtype=int
 )
 
-# Interaction
-df['dark_mobile'] = df['dark'].multiply(df['mobile'])
-
 # Constant
 df['const'] = 1
 
-# Declare specification
+# Declare model
 spec = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark', 'dark_mobile']],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconst=True
 )
 
 # Fit model
 model = spec.fit()
-
-# View results
-model.summary()
-
-# Declare model
-spec2 = sm.OLS(
-    endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
-    hasconst=True
-)
-
-# Fit model
-model2 = spec2.fit()
-
-# View results
-model2.summary()
