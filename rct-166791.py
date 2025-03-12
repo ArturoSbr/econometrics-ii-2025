@@ -39,7 +39,7 @@ X2 = df[['ireland', 'scotland', 'wales', 'dark']]
 X2 = sm.add_constant(X2)
 spec2 = sm.OLS(
     endog=df['purchase'],
-    exog=X2 
+    exog=X2
 )
 model2 = spec2.fit()
 model2.summary()
