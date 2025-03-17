@@ -4,20 +4,20 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
-#Load data
+# Load data
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
 
-#View data
+# View data
 df.head()
 
-#Check for nulls
+# Check for nulls
 df.isna().sum()
 
-#Check datatypes
+# Check datatypes
 df.dtypes
 
-#Clean data
+# Clean data
 # Rename columns
 df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
@@ -38,7 +38,7 @@ df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(i
 # Set `location`` to lowercase
 df['location'] = df['location'].str.lower()
 
-#Encode categorical variables to binary columns (also known as One-Hot Encoding)
+# Encode categorical variables to binary columns (also known as One-Hot Encoding)
 df.head()
 # One-hot encoding
 df = pd.get_dummies(
@@ -49,14 +49,14 @@ df = pd.get_dummies(
     dtype=int
 )
 
-#Create interaction term and assign a constant
+# Create interaction term and assign a constant
 # Interaction
 df['dark_mobile'] = df['dark'].multiply(df['mobile'])
 
 # Constant
 df['const'] = 1
 
-#Declare linear model
+# Declare linear model
 # Declare specification
 spec = sm.OLS(
     endog=df['purchase'],
@@ -70,7 +70,7 @@ model = spec.fit()
 # View results
 model.summary()
 
-#Fitting a parsimonious model
+# Fitting a parsimonious model
 # Declare model
 spec2 = sm.OLS(
     endog=df['purchase'],
