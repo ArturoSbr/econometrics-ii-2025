@@ -7,16 +7,6 @@ import statsmodels.api as sm
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
 
-# View data
-df.head()
-
-# Check for nulls
-df.isna().sum()
-
-# Check datatypes
-df.dtypes
-
-# Clean data
 # Rename columns
 df.columns = ['id', 'dark', 'views', 'time', 'purchase', 'mobile', 'location']
 
@@ -31,7 +21,7 @@ df.replace(
     inplace=True
 )
 
-# Convert strings -> ints
+# Convert strings to integers
 df[['dark', 'mobile', 'purchase']] = df[['dark', 'mobile', 'purchase']].astype(int)
 
 # Set `location`` to lowercase
@@ -65,20 +55,3 @@ spec = sm.OLS(
 
 # Fit model
 model = spec.fit()
-
-# View results
-model.summary()
-
-# Fitting a parsimonious model
-# Declare model
-spec2 = sm.OLS(
-    endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],  # No interaction
-    hasconst=True
-)
-
-# Fit model
-model2 = spec2.fit()
-
-# View results
-model2.summary()
