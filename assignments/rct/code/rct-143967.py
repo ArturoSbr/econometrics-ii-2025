@@ -49,7 +49,7 @@ df['const'] = 1
 # Declare specification
 spec = sm.OLS(
     endog=df['purchase'],
-    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark', 'dark_mobile']],
+    exog=df[['const', 'ireland', 'scotland', 'wales', 'dark']],
     hasconst=True
 )
 
