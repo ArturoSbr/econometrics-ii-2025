@@ -1,5 +1,4 @@
-# Regression Discontinuity Design
-
+# Regression Discontinuity Design
 We will replicate the main results of the paper _Using Maimonides' Rule to Estimate the
 Effect of Class Size on Scholastic Achievement_ (Angrist and Lavy, 1999). Our goal is to
 estimate the causal effect of class size on test scores (see `./data/dict.md` for more
@@ -26,7 +25,6 @@ the **Local Average Treatment Effect**. We concluded that reducing class size im
 math performance.
 
 ## Assignment
-
 Your job is to estimate the LATE of class size on average verbal scores (`avgverb`).
 Start off with a cubic model and trim it down as you see fit.
 
@@ -47,6 +45,5 @@ this file)
 5. Make sure your submission passes the builds!
 
 ## Expected result
-
 The estimated value of your final model's LATE should be `-5.3948` with a _p_-value of
 `0.057`.
