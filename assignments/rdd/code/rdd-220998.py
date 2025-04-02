@@ -1,10 +1,8 @@
 # Equipo: Ainé Fernández, Eduardo Aguirre, Francisco Hernández, Lorena Shaadi. 
 
 import os
-import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-import matplotlib.pyplot as plt
 
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
