@@ -1,6 +1,6 @@
 import pandas as pd
 import statsmodels.api as sm
-df = pd.read_csv('assignments/rdd/data/raw.csv')
+df = pd.read_csv('../data/raw.csv')
 THR = 40
 df['x'] = df['cohsize'] - THR
 spec1 = sm.OLS.from_formula(
