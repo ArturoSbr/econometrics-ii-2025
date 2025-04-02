@@ -7,4 +7,5 @@ dependencies:
   - pandas=2.2.3
   - statsmodels=0.14.4
   - linearmodels=6.0.0
+  - matplotlib=3.10.1
   - flake8=7.0.0
