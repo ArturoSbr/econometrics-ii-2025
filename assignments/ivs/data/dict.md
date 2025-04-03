@@ -27,17 +27,20 @@
 - **wsocent**: Dummy for employment in the **West** central city
 - **yob**: Year of birth
 
-## Steps followed to clean the data
-The raw data has no column names and a few other details. The following steps were
-taken to clean the original dataset.
+## Steps followed to clean the data from Angrist's archive
+You do not need to follow these steps because the file `raw.csv` is the very same
+output of the code below. Regardless, I took the following steps to taken to clean the
+original STATA dataset.
 
 ```python
 # Imports
+import patoolib
 import numpy as np
 import pandas as pd
 
 # Read data
-df = pd.read_stata("NEW7080.dta")
+patoolib.extract_archive('NEW7080_1.rar')  # Extract .rar
+df = pd.read_stata('NEW7080.dta')
 
 # Rename columns
 df.rename(
@@ -68,17 +71,17 @@ df.rename(
 df.drop([col for col in df.columns if col.startswith('v')], axis=1, inplace=True)
 
 # Create columns
+df['yob'] = np.where(
+    df['yob'].le(1900),
+    df['yob'] + 1900,
+    df['yob']
+)
 df = df.assign(
-    yob=np.where(
-        df['yob'].le(1900),
-        df['yob'] + 1900,
-        df['yob']
-    ),
     cohort=np.where(
-        df['yob'].between(30, 39),
+        df['yob'].between(1930, 1939),
         '30-39',
         np.where(
-            df['yob'].between(40, 49),
+            df['yob'].between(1940, 1949),
             '40-49',
             '20-29'
         )
@@ -88,6 +91,9 @@ df = df.assign(
         df['ageq'] - 1900,
         df['ageq']
     ),
-    ageqsq=df['age'].pow(2)
+    ageqsq=df['ageq'].pow(2)
 )
+
+# Export dataset
+df.to_csv('raw.csv', index=False)
 ```
