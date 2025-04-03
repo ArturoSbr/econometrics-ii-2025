@@ -45,7 +45,8 @@ add a constant to `df`):
     - Controls: const, race, married, smsa, neweng, midatl, enocent, wnocent,
     soatl, esocent, wsocent, mt, educ and your year of birth dummies (set 1949 as the
     reference)
-6. Run a two-stage least squares IV model to account for `educ`'s endogeneity:
+6. Run a two-stage least squares IV model to account for `educ`'s endogeneity using
+`linearmodels.IV2SLS`:
     - Store the reults in `res1`
     - Dependent variable: lwklywge
     - Controls: const, race, married, smsa, neweng, midatl, enocent, wnocent,
