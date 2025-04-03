@@ -29,8 +29,8 @@
 
 ## Steps followed to clean the data from Angrist's archive
 You do not need to follow these steps because the file `raw.csv` is the very same
-output of the code below. Regardless, I took the following steps to taken to clean the
-original STATA dataset.
+output of the code below. Regardless, I took the following steps to clean the original
+STATA dataset.
 
 ```python
 # Imports
