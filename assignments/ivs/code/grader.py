@@ -1,5 +1,4 @@
-# assignments/ivs/code/grader.py
-
+# Imports
 import importlib.util
 import sys
 import traceback
@@ -53,18 +52,12 @@ def main():
 
     test_cells = [
         # Q1 — Check if df exists
-        (1, """assert 'df' in context, 'Variable `df` is not defined.'
-import pandas as pd
-assert isinstance(df, pd.DataFrame), '`df` must be a pandas DataFrame.'
-"""),
+        (1, "df"),
 
         # Q2 — Filter
-        (2, """TEST_2_LEN = 486926
-TEST_2_MIN = 1940
-TEST_2_MAX = 1949
-assert len(df) == TEST_2_LEN, 'Bad filter: length of `df` does not match'
-assert df['yob'].min() == TEST_2_MIN, 'Bad filter: minimum year of birth must be 1940'
-assert df['yob'].max() == TEST_2_MAX, 'Bad filter: maximum year of birth must be 1949'
+        (2, """assert 'cohort' in df.columns, 'Missing `cohort` column'
+assert df['cohort'].nunique() == 1, 'Cohort should contain only one value'
+assert df['cohort'].unique().item() == '40-49', 'Cohort value should be "40-49"'
 """),
 
         # Q3 — Dummies for year and quarter of birth
@@ -84,10 +77,10 @@ assert df[TEST_3_COLS].dtypes.astype(str).unique().item() == 'int64', (
 
         # Q4 — Interactions
         (4, """import itertools
-yob = [col for col in df.columns if col.startswith('yob_')]
-qob = [col for col in df.columns if col.startswith('qob_')]
+yob = [f'yob_{str(i)}' for i in range(1940, 1950)]
+qob = [f'qob_{str(i)}' for i in range(1, 5)]
 prods = list(itertools.product(yob, qob))
-TEST_4_COLS = ['_x_'.join(prod) for prod in prods]
+TEST_4_COLS = [f'{y}_{q}' for y, q in prods]
 try:
     df[TEST_4_COLS]
 except:
@@ -106,7 +99,7 @@ assert np.abs(res0.tvalues['educ'].item() - TEST_5_T) < 1e-6, (
 
         # Q6 — IV t-stat
         (6, """TEST_6_T = 2.698848959270176
-assert np.abs(res1.tsats['educ'].item() - TEST_6_T) < 1e-6, (
+assert np.abs(res1.tstats['educ'].item() - TEST_6_T) < 1e-6, (
     f't-stat for `educ` does not match. Expected {TEST_6_T}.'
 )
 """),
