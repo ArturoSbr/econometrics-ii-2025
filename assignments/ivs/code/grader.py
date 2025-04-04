@@ -3,16 +3,15 @@ import importlib.util
 import sys
 import traceback
 from pathlib import Path
-import re
+import os
 
 # Find student's script
-def find_student_script(directory="assignments/ivs/code"):
-    code_dir = Path(directory)
-    pattern = re.compile(r"ivs-(.+)\.py")
-    for path in code_dir.glob("ivs-*.py"):
-        if pattern.match(path.name):
-            return path
+def find_student_script():
+    for filename in os.listdir():
+        if filename.startswith("ivs-") and filename.endswith(".py"):
+            return filename
     raise FileNotFoundError("No student script matching 'ivs-<id>.py' found.")
+    sys.exit(1)
 
 # Import student's objects
 def import_student_solution(path):
@@ -42,7 +41,7 @@ def main():
         student_path = find_student_script()
     except FileNotFoundError as e:
         print(e)
-        return
+        sys.exit(1)
 
     print(f"Found student script: {student_path}")
     student = import_student_solution(student_path)
