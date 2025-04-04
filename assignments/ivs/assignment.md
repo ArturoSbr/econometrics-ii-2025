@@ -22,21 +22,28 @@ In other words, they are able to legally drop out before other students.
 3. Pull the latest version of `develop` (`git pull origin develop`)
 4. Familiarize yourself with the dataset (read `assignments/ivs/data/dict.md`)
 5. After updating your repo, switch to a new branch `assignments/ivs-<your id here>`
-5. Submit a refactored python script (`assignments/ivs/code/ivs-<your id here>`) with
+5. Submit a refactored python script (`assignments/ivs/code/ivs-<your id here>.py`) with
 `git add`, `git commit` and `git push`
+    - For example: `assignments/ivs/code/ivs-130524.py`
 6. Remember **NOT TO USE** `git add *` or `git add .` (don't be that person)
+    - Don't submit your notebook or anything that's not the refactored Python script
 
 ## Instructions
 1. Load the data in an object named `df`
+    - Your code should be in this directory: `./assignments/ivs/code/`, so use relative
+    paths to get back to `/data`.
 2. Filter out respondants born before 1940 (keep 1940 onward)
 3. Create a dummy for year of birth and quarter of birth (use `pd.get_dummies` to make
 your life easier). The resulting variables must be named `yob_1940`, ..., `yob_1949`,
 `qob_1`, ..., `qob_4`.
     - Make sure the values are integers and not booleans!
-4. Create an interaction between all years and all quarters. For example, create
+4. Create an interaction term for every year and every quarter using the dummies you
+created in the previous step. For example,
 `df['yob_1940_qob_1'] = df['yob_1940'] * df['qob_1']`.
     - Hint: Ask an AI copilot to help you create these columns with `itertools` and
-    `pd.assign`.
+    `pd.assign`
+    - The new columns must follow the naming convention `yob_{year}_qob_{quarter}`. For
+    example, `yob_1944_qob_3`.
 5. Run a naive model; one that doesn't account for `educ`'s endogeneity (remember to
 add a constant to `df`):
     - Store the results in `res0`
@@ -46,7 +53,7 @@ add a constant to `df`):
     soatl, esocent, wsocent, mt, educ and your year of birth dummies (set 1949 as the
     reference)
 6. Run a two-stage least squares IV model to account for `educ`'s endogeneity using
-`linearmodels.IV2SLS`:
+`IV2SLS` from `linearmodels`:
     - Store the reults in `res1`
     - Dependent variable: lwklywge
     - Controls: const, race, married, smsa, neweng, midatl, enocent, wnocent,
