@@ -48,5 +48,6 @@ asks you to open a PR to squash a bug or implement a new feature.
     `./assignments/ivs/code/`)
     - Submit the file by addig, commiting and pushing your code
 5. If your branch and Python script are named correctly (steps 3 and 4), your branch
-will trigger a few [Actions](https://github.com/ArturoSbr/econometrics-ii-2025) and
-grade your code.
+will trigger a few [Actions](
+    https://github.com/ArturoSbr/econometrics-ii-2025/actions
+) and grade your code.
