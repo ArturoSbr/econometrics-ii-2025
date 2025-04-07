@@ -21,7 +21,7 @@ In other words, they are able to legally drop out before other students.
 2. Switch to branch `develop`
 3. Pull the latest version of `develop` (`git pull origin develop`)
 4. Familiarize yourself with the dataset (read `assignments/ivs/data/dict.md`)
-5. After updating your repo, switch to a new branch `assignments/ivs-<your id here>`
+5. After updating your repo, switch to a new branch `assignment/ivs-<your id here>`
 5. Submit a refactored python script (`assignments/ivs/code/ivs-<your id here>.py`) with
 `git add`, `git commit` and `git push`
     - For example: `assignments/ivs/code/ivs-130524.py`
