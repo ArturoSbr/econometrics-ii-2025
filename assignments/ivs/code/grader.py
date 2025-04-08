@@ -2,8 +2,8 @@
 import importlib.util
 import sys
 import traceback
-from pathlib import Path
 import os
+import numpy as np
 
 # Find student's script
 def find_student_script():
