@@ -1,7 +1,7 @@
 import pandas as pd
 import statsmodels.api as sm
 import itertools
-df = pd.read_csv('./data/raw.csv')
+df = pd.read_csv('../data/raw.csv')
 df = df[df['yob'] >= 1940]
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob')
 yob_dummies = yob_dummies.loc[:, ['yob_{}'.format(y) for y in range(1940, 1950)]]
