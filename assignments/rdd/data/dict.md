@@ -1,5 +1,5 @@
 # Class Size and Academic Performance
-The paper _Using Maimonides' Rule to Estimate the Effect of Class Size on
+The paper _Using **Maimonides**' Rule to Estimate the Effect of Class Size on
 Scholastic Achievement_ (Angrist and Lavy, 1999) studies the effect of class
 size on academic performance.
 
