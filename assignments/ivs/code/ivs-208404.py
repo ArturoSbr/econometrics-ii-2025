@@ -1,9 +1,9 @@
 
-import pandas as pd
-import statsmodels.api as sm
-from linearmodels.iv import IV2SLS
+import pandas as pd # type: ignore
+import statsmodels.api as sm # type: ignore
+from linearmodels.iv import IV2SLS # type: ignore
 from itertools import product
-import numpy as np 
+
 
 df = pd.read_csv('../data/raw.csv')
 df = df[df['yob'] >= 1940]
@@ -18,7 +18,6 @@ for yob, qob in product(yob_cols, qob_cols):
     df[f'{yob}_{qob}'] = (df[yob] * df[qob]).astype(int)
 
 df['const'] = 1
-
 
 controls = [
     'educ', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
