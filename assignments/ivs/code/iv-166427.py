@@ -12,7 +12,7 @@ df = pd.read_csv(PATH)
 # Filtrar los respondientes nacidos después de 1940
 df = df[df['yob'] >= 1940]
 
-# Crear las variables dummy para el año de nacimiento (yob) y el trimestre de nacimiento (qob)
+# Crear las variables dummy para yob y el trimestre de nacimiento
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob', drop_first=True)
 qob_dummies = pd.get_dummies(df['qob'], prefix='qob', drop_first=True)
 
@@ -23,7 +23,7 @@ qob_dummies = qob_dummies.astype(int)
 # Añadir las dummies al dataframe
 df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
 
-# Crear los términos de interacción entre el año de nacimiento y el trimestre de nacimiento
+# Crear los términos de interacción entre el año  el trimestre de nacimiento
 interaction_terms = list(product(yob_dummies.columns, qob_dummies.columns))
 
 # Bucle para crear las columnas de interacción
@@ -37,7 +37,8 @@ controls = [
     'educ', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
     'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
 ]
-yob_dummies = [col for col in df.columns if col.startswith('yob_') and '1949' not in col and 'qob_' not in col]
+yob_dummies = [col for col in df.columns if col.startswith('yob_')
+               and '1949' not in col and 'qob_' not in col]
 
 X = df[['const'] + controls + yob_dummies]
 y = df['lwklywge']
