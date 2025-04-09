@@ -43,13 +43,16 @@ instr_vars = [
     if f'yob_{y}_qob_{q}' in df.columns
 ]
 endog = df['educ']
-exog = df[controls]  
-instr = df[instr_vars]  
+exog = df[controls]
+instr = df[instr_vars]
+
 res1 = IV2SLS(
     dependent=df['lwklywge'],
     exog=sm.add_constant(exog, has_constant='add'),
     endog=endog,
     instruments=sm.add_constant(instr, has_constant='add')
 ).fit(cov_type='robust')
+
 bias = True
-bias_sign = '+'# Trigger workflow run
+
+bias_sign = '+'
