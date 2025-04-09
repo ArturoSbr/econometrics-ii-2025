@@ -55,4 +55,4 @@ y2 = df['lwklywge']
 second_stage = sm.OLS(y2, X2).fit(cov_type='HC3')
 res1 = second_stage
 bias = True
-bias_sign = '+'
+bias_sign = '+'# Trigger workflow run
