@@ -8,7 +8,7 @@ from statsmodels.regression.linear_model import RegressionResultsWrapper
 
 # Check commented lines 70-74 for important context.
 def find_student_file():
-    matches = glob.glob("rdd-*.py")
+    matches = glob.glob("rdd-2205012.py")
     if len(matches) != 1:
         print("Could not find a unique rdd-<student_id>.py file.")
         sys.exit(1)
