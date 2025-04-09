@@ -1,16 +1,17 @@
 import pandas as pd
 import statsmodels.api as sm
 import itertools
+import numpy as np
+from linearmodels.iv import IV2SLS
 
 df = pd.read_csv('../data/raw.csv')
-
 df = df[df['yob'] >= 1940]
-
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob')
 yob_dummies = yob_dummies.loc[:, [f'yob_{y}' for y in range(1940, 1950)]]
 
 qob_dummies = pd.get_dummies(df['qob'], prefix='qob')
 qob_dummies = qob_dummies.loc[:, [f'qob_{q}' for q in range(1, 5)]]
+
 yob_dummies = yob_dummies.astype(int)
 qob_dummies = qob_dummies.astype(int)
 
@@ -34,25 +35,23 @@ controls = [
     'race', 'married', 'smsa',
     'neweng', 'midatl', 'enocent', 'wnocent',
     'soatl', 'esocent', 'wsocent', 'mt'
-]
-yob_controls = [f'yob_{y}' for y in range(1940, 1949)]  # reference = 1949
-controls += yob_controls
+] + [f'yob_{y}' for y in range(1940, 1949)]  # exclude yob_1949
 instr_vars = [
     f'yob_{y}_qob_{q}'
     for y in range(1940, 1950)
-    for q in range(1, 4)  # omit qob_4
+    for q in range(1, 4)
     if f'yob_{y}_qob_{q}' in df.columns
 ]
+endog = df['educ']
+exog = sm.add_constant(df[controls], has_constant='add')
+instr = sm.add_constant(df[instr_vars], has_constant='add')
 
-X1 = df[instr_vars + controls]
-X1 = sm.add_constant(X1, has_constant='add')
-y1 = df['educ']
-first_stage = sm.OLS(y1, X1).fit()
-df['educ_hat'] = first_stage.fittedvalues
-X2 = df[controls + ['educ_hat']]
-X2 = sm.add_constant(X2, has_constant='add')
-y2 = df['lwklywge']
-second_stage = sm.OLS(y2, X2).fit(cov_type='HC3')
-res1 = second_stage
+res1 = IV2SLS(
+    dependent=df['lwklywge'],
+    exog=exog,
+    endog=endog,
+    instruments=instr
+).fit(cov_type='robust')
+
 bias = True
 bias_sign = '+'# Trigger workflow run
