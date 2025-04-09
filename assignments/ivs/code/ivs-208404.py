@@ -1,4 +1,4 @@
-# Cargar librerías
+
 import pandas as pd
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
