@@ -29,10 +29,25 @@ asks you to open a PR to squash a bug or implement a new feature.
 │   ├── rct
 │   └── rdd
 ├── lecture-notes     # Lecture notes
-├── .gitignore        # Files ignored by git
+├── .flake8           # Linting configuration (ignore this)
+├── .gitignore        # Files ignored by git (ignore this)
+├── environment.yml   # Use this to create your environment
 ├── README.md         # Intro to this repo
-└── requirements.txt  # Install these libraries on your venv
+└── requirements.txt  # Development environment (ignore this)
 ```
 
 ## Contributing (AKA submitting your homework)
-TO-DO
+1. Clone the repo to your local (if you haven't done so already)
+3. Switch to `develop` (`git checkout develop`)
+2. Pull the latest changes (`git pull origin develop`)
+3. Create a branch (`git checkout -b assignment/{homework id}-{student id}`)
+    - For example `git checkout -b assignment/ivs-659402`
+4. Submit a single Python file
+    - Must be named `{homework id}-{student id}.py` (eg, `ivs-659402.py`)
+    - Must be placed in the corresponding homework's `code` directory (eg,
+    `./assignments/ivs/code/`)
+    - Submit the file by addig, commiting and pushing your code
+5. If your branch and Python script are named correctly (steps 3 and 4), your branch
+will trigger a few [Actions](
+    https://github.com/ArturoSbr/econometrics-ii-2025/actions
+) and grade your code.
