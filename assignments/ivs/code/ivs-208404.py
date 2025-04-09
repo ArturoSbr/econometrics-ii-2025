@@ -1,48 +1,61 @@
+# Cargar librerías
 import pandas as pd
 import statsmodels.api as sm
-import itertools
-import numpy as np
 from linearmodels.iv import IV2SLS
+from itertools import product
 
+# Cargar y preparar datos
 df = pd.read_csv('../data/raw.csv')
 df = df[df['yob'] >= 1940]
-yob_dummies = pd.get_dummies(df['yob'], prefix='yob')
-yob_dummies = yob_dummies.loc[:, [f'yob_{y}' for y in range(1940, 1950)]].astype(int)
-qob_dummies = pd.get_dummies(df['qob'], prefix='qob')
-qob_dummies = qob_dummies.loc[:, [f'qob_{q}' for q in range(1, 5)]].astype(int)
-df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
-interaction_cols = {
-    f'{y}_{q}': df[y] * df[q]
-    for y, q in itertools.product(yob_dummies.columns, qob_dummies.columns)
-}
-df = df.assign(**interaction_cols)
-formula = (
-    "lwklywge ~ educ + race + married + smsa + "
-    "neweng + midatl + enocent + wnocent + soatl + "
-    "esocent + wsocent + mt + C(yob, Treatment(1949))"
-)
-model = sm.OLS.from_formula(formula, data=df)
-res0 = model.fit(cov_type='HC3')
-controls = [
-    'race', 'married', 'smsa',
-    'neweng', 'midatl', 'enocent', 'wnocent',
-    'soatl', 'esocent', 'wsocent', 'mt'
-] + [f'yob_{y}' for y in range(1940, 1949)]
 
-instr_vars = [
-    f'yob_{y}_qob_{q}'
-    for y in range(1940, 1950)
-    for q in range(1, 4)
-    if f'yob_{y}_qob_{q}' in df.columns
+# Crear dummies para año y trimestre
+yob_dummies = pd.get_dummies(df['yob'], prefix='yob').astype(int)
+qob_dummies = pd.get_dummies(df['qob'], prefix='qob').astype(int)
+df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
+
+# Crear interacciones yob × qob (excepto _qob_4 se usará como referencia)
+yob_cols = [col for col in df.columns if col.startswith('yob_') and '_qob_' not in col]
+qob_cols = [col for col in df.columns if col.startswith('qob_')]
+for yob, qob in product(yob_cols, qob_cols):
+    df[f'{yob}_{qob}'] = (df[yob] * df[qob]).astype(int)
+
+# Agregar constante
+df['const'] = 1
+
+# ========================
+# Modelo OLS (res0)
+# ========================
+controls = [
+    'educ', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+    'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
 ]
+yob_dummies = [col for col in df.columns if col.startswith('yob_') and '1949' not in col and 'qob_' not in col]
+
+X = df[['const'] + controls + yob_dummies]
+y = df['lwklywge']
+res0 = sm.OLS(y, X).fit(cov_type='HC3')
+
+# ========================
+# Modelo IV (res1)
+# ========================
+controls_iv = [
+    'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+    'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
+]
+yob_dummies_iv = [col for col in df.columns if col.startswith('yob_') and '1949' not in col and '_qob_' not in col]
+instr_cols = [col for col in df.columns if '_qob_' in col and not col.endswith('_qob_4')]
+
+exog = df[['const'] + controls_iv + yob_dummies_iv]
 endog = df['educ']
-exog = df[controls]
-instr = df[instr_vars]
+instruments = df[instr_cols]
+
 res1 = IV2SLS(
     dependent=df['lwklywge'],
-    exog=sm.add_constant(exog, has_constant='add'),
+    exog=exog,
     endog=endog,
-    instruments=sm.add_constant(instr, has_constant='add')
+    instruments=instruments
 ).fit(cov_type='robust')
+
+# Evaluación del sesgo
 bias = True
 bias_sign = '+'
