@@ -1,7 +1,6 @@
 #Importing libraries
 import os
 import pandas as pd
-import numpy as np
 import statsmodels.api as sm
 import itertools
 from linearmodels import IV2SLS
