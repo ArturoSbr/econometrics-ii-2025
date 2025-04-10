@@ -1,9 +1,9 @@
 # Cargar librerías
+import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
 from itertools import product
-import numpy as np
 
 # Cargar y preparar datos
 df = pd.read_csv('../data/raw.csv')
