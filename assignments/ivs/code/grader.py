@@ -3,6 +3,7 @@ import importlib.util
 import sys
 import traceback
 import os
+import numpy as np
 
 # Find student's script
 def find_student_script():
