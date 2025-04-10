@@ -1,4 +1,3 @@
-# Cargar librerías
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -49,4 +48,3 @@ res1 = IV2SLS(dependent=y, exog=exog, endog=endog, instruments=instruments).fit(
 # Evaluación del sesgo
 bias = True
 bias_sign = '+'
-
