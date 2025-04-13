@@ -5,6 +5,7 @@ import pandas as pd
 import itertools
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+from linearmodels.iv import IV2SLS 
 
 # Load data
 PATH = os.path.join('..', 'data', 'raw.csv')
