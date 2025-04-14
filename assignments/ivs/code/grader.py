@@ -1,9 +1,9 @@
 # Imports
-import importlib.util
+import os
 import sys
 import traceback
-import os
-import numpy as np  
+import importlib.util
+import numpy as np
 
 # Find student's script
 def find_student_script():
