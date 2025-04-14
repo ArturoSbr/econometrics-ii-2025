@@ -1,5 +1,4 @@
-import numpy as np
-np = np  # <- esta línea es la clave
+#paquetes
 import pandas as pd
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
