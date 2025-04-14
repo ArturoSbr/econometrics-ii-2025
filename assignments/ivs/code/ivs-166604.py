@@ -15,7 +15,7 @@ df = pd.read_csv(PATH)
 df.isna().sum()
 df.dtypes
 
-df_filtered = df[df['yob'] >= 1940].reset_index(drop = True)
+df_filtered = df[df['yob'] > 1940]
 
 # Create dummies for yob and qob using pd.get_dummies
 yob_dummies = pd.get_dummies(df_filtered['yob'], prefix = 'yob').astype(int)
