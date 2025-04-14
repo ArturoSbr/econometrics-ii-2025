@@ -46,6 +46,6 @@ endog = df['educ']
 instruments = df[instr_cols]
 res1 = IV2SLS(dependent=y, exog=exog, endog=endog, instruments=instruments).fit(cov_type='robust')
 
-# Evaluación del sesgo
+# sesgo
 bias = True
 bias_sign = '+'
