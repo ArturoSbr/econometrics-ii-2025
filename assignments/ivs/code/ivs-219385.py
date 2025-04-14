@@ -1,4 +1,5 @@
 #paquetes
+import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
