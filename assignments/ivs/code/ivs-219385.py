@@ -7,6 +7,7 @@ from itertools import product
 # Cargar y preparar datos
 df = pd.read_csv('../data/raw.csv')
 df = df[df['yob'] >= 1940]
+df['cohort'] = '40-49'
 
 # Crear dummies para año y trimestre
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob').astype(int)
@@ -48,3 +49,4 @@ res1 = IV2SLS(dependent=y, exog=exog, endog=endog, instruments=instruments).fit(
 # sesgo
 bias = True
 bias_sign = '+'
+
