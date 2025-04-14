@@ -15,11 +15,18 @@ df = pd.read_csv(PATH)
 df.isna().sum()
 df.dtypes
 
-df_filtered = df[df['yob'] > 1940]
+
+
+df_filtered = df[df['yob'] >= 1940]
 
 # Create dummies for yob and qob using pd.get_dummies
 yob_dummies = pd.get_dummies(df_filtered['yob'], prefix = 'yob').astype(int)
 qob_dummies = pd.get_dummies(df_filtered['qob'], prefix = 'qob').astype(int)
+yob_names = yob_dummies.columns.tolist()
+qob_names = qob_dummies.columns.tolist()
+dummy_names = yob_names + qob_names
+
+
 
 # merge dummies with df_filtered
 df_filtered = pd.concat([df_filtered, yob_dummies, qob_dummies], axis = 1)
