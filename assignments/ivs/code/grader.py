@@ -1,9 +1,9 @@
 # Imports
-import importlib.util
+import os
 import sys
 import traceback
-from pathlib import Path
-import os
+import importlib.util
+import numpy as np
 
 # Find student's script
 def find_student_script():
@@ -46,6 +46,7 @@ def main():
     print(f"Found student script: {student_path}")
     student = import_student_solution(student_path)
     context = student.__dict__
+    context['np'] = np
     score = 0
     total = 0
 
