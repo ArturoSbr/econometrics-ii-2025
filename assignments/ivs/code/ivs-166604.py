@@ -15,8 +15,8 @@ df = pd.read_csv(PATH)
 df.isna().sum()
 df.dtypes
 
-df_4049 = '40-49'
-df_filtered = df[df['cohort'] == df_4049 ]
+cohort = '40-49'
+df_filtered = df[df['cohort'] == cohort]
 
 # Create dummies for yob and qob using pd.get_dummies
 yob_dummies = pd.get_dummies(df_filtered['yob'], prefix = 'yob').astype(int)
