@@ -1,10 +1,9 @@
-
 import pandas as pd # type: ignore
 import statsmodels.api as sm # type: ignore
 from linearmodels.iv import IV2SLS # type: ignore
 from itertools import product
 
-
+# CODE FOR IV
 df = pd.read_csv('../data/raw.csv')
 df = df[df['yob'] >= 1940]
 
