@@ -2,17 +2,13 @@
 import os
 import numpy as np
 import pandas as pd
-import itertools
+from itertools import product
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS 
 
-# Load data
-PATH = os.path.join('..', 'data', 'raw.csv')
-df = pd.read_csv(PATH)
+df = pd.read_csv('../data/raw.csv')
+df = df[df['yob'] >= 1940]
 
-# Data validation
-df.isna().sum()
-df.dtypes
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob').astype(int)
 qob_dummies = pd.get_dummies(df['qob'], prefix='qob').astype(int)
 df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
@@ -53,5 +49,5 @@ res1 = IV2SLS(
     instruments=instruments
 ).fit(cov_type='robust')
 
-bias = True  
-bias_sign = '+' 
+bias = True
+bias_sign = '+' #
