@@ -15,17 +15,12 @@ df = pd.read_csv(PATH)
 df.isna().sum()
 df.dtypes
 
-
-
-df_filtered = df[df['yob'] >= 1940]
+df_4049 = '40-49'
+df_filtered = df[df['cohort'] == df_4049 ]
 
 # Create dummies for yob and qob using pd.get_dummies
 yob_dummies = pd.get_dummies(df_filtered['yob'], prefix = 'yob').astype(int)
 qob_dummies = pd.get_dummies(df_filtered['qob'], prefix = 'qob').astype(int)
-yob_names = yob_dummies.columns.tolist()
-qob_names = qob_dummies.columns.tolist()
-dummy_names = yob_names + qob_names
-
 
 
 # merge dummies with df_filtered
@@ -68,8 +63,8 @@ controls = [
 
 # 3. Prepare instruments (interactions between yob and qob, excluding qob_4 for each year)
 instruments = []
-for year in range(1940, 1950):
-    for quarter in range(1, 4):  # Only qob_1 to qob_3
+for year in range(1940, 1949):
+    for quarter in range(1, 4): 
         instruments.append(f'yob_{year}_qob_{quarter}')
 
 # 4. Verify full column rank of instruments
@@ -80,7 +75,7 @@ if np.linalg.matrix_rank(X_inst.values) < X_inst.shape[1]:
 # 5. Correct formula specification for IV2SLS
 # The proper format is: 'depvar ~ exog_vars + [endog ~ instruments]'
 formula = (
-    'lwklywge ~ 1 + race + married + smsa + neweng + midatl + '
+    'lwklywge ~ const + race + married + smsa + neweng + midatl + '
     'enocent + wnocent + soatl + esocent + wsocent + mt + '
     + ' + '.join([f'yob_{year}' for year in range(1940, 1949)])
     + ' + [educ ~ ' + ' + '.join(instruments) + ']'
