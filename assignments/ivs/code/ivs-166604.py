@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import itertools
 import statsmodels.api as sm
-import statsmodels.formula.api as smf
 from linearmodels.iv import IV2SLS 
 
 # Load data
@@ -14,75 +13,45 @@ df = pd.read_csv(PATH)
 # Data validation
 df.isna().sum()
 df.dtypes
+yob_dummies = pd.get_dummies(df['yob'], prefix='yob').astype(int)
+qob_dummies = pd.get_dummies(df['qob'], prefix='qob').astype(int)
+df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
 
-cohort = '40-49'
-df_filtered = df[df['yob'] >= 1940]
+yob_cols = [col for col in df.columns if col.startswith('yob_') and '_qob_' not in col]
+qob_cols = [col for col in df.columns if col.startswith('qob_')]
+for yob, qob in product(yob_cols, qob_cols):
+    df[f'{yob}_{qob}'] = (df[yob] * df[qob]).astype(int)
 
-# Create dummies for yob and qob using pd.get_dummies
-yob_dummies = pd.get_dummies(df_filtered['yob'], prefix = 'yob').astype(int)
-qob_dummies = pd.get_dummies(df_filtered['qob'], prefix = 'qob').astype(int)
+df['const'] = 1
 
-
-# merge dummies with df_filtered
-df_filtered = pd.concat([df_filtered, yob_dummies, qob_dummies], axis = 1)
-
-# 1. Create interaction terms
-yob_cols = [f'yob_{year}' for year in range(1940, 1950)]
-qob_cols = [f'qob_{q}' for q in range(1, 5)]
-
-# 2. Create iteractions
-interaction_terms = {
-    f'{yob}_{qob}': df_filtered[yob] * df_filtered[qob]
-    for yob, qob in itertools.product(yob_cols, qob_cols)
-}
-
-# 3. Assign interction terms to df_filtered
-df_filtered = df_filtered.assign(**interaction_terms) 
-
-# Add a constant term 
-df_filtered['const'] = 1
-
-# Create control variables
-control_vars = [
-    'const', 'race', 'married', 'smsa', 'neweng', 'midatl',
-    'enocent', 'wnocent', 'soatl', 'esocent', 'wsocent', 'mt', 'educ'
-] + [f'yob_{year}' for year in range(1940, 1949)] 
-
-# Naive model
-model = sm.OLS(df_filtered['lwklywge'], df_filtered[control_vars])
-res0 = model.fit(cov_type='HC3')
-
-# 1. Prepare the variables
-df_filtered['const'] = 1  # Add constant term
-
-# 2. Define control variables (1949 as reference for year dummies)
 controls = [
-    'const', 'race', 'married', 'smsa', 'neweng', 'midatl',
-    'enocent', 'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
-] + [f'yob_{year}' for year in range(1940, 1949)]
+    'educ', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+    'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
+]
+yob_dummies = [col for col in df.columns if col.startswith('yob_') and '1949' not in col and 'qob_' not in col]
 
-# 3. Prepare instruments (interactions between yob and qob, excluding qob_4 for each year)
-instruments = []
-for year in range(1940, 1949):
-    for quarter in range(1, 4): 
-        instruments.append(f'yob_{year}_qob_{quarter}')
+X = df[['const'] + controls + yob_dummies]
+y = df['lwklywge']
+res0 = sm.OLS(y, X).fit(cov_type='HC3')
 
-# 4. Verify full column rank of instruments
-X_inst = df_filtered[instruments]
-if np.linalg.matrix_rank(X_inst.values) < X_inst.shape[1]:
-    raise ValueError("Instruments don't have full column rank")
 
-# 5. Correct formula specification for IV2SLS
-# The proper format is: 'depvar ~ exog_vars + [endog ~ instruments]'
-formula = (
-    'lwklywge ~ const + race + married + smsa + neweng + midatl + '
-    'enocent + wnocent + soatl + esocent + wsocent + mt + '
-    + ' + '.join([f'yob_{year}' for year in range(1940, 1949)])
-    + ' + [educ ~ ' + ' + '.join(instruments) + ']'
-)
+controls_iv = [
+    'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+    'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
+]
+yob_dummies_iv = [col for col in df.columns if col.startswith('yob_') and '1949' not in col and '_qob_' not in col]
+instr_cols = [col for col in df.columns if '_qob_' in col and not col.endswith('_qob_4')]
 
-# IV model
-res1 = IV2SLS.from_formula(formula, data=df_filtered).fit(cov_type='robust')
+exog = df[['const'] + controls_iv + yob_dummies_iv]
+endog = df['educ']
+instruments = df[instr_cols]
+
+res1 = IV2SLS(
+    dependent=df['lwklywge'],
+    exog=exog,
+    endog=endog,
+    instruments=instruments
+).fit(cov_type='robust')
 
 bias = True  
 bias_sign = '+' 
