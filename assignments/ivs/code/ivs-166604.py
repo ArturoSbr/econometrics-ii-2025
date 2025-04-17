@@ -6,7 +6,7 @@ from itertools import product
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS 
 
-df = pd.read_csv('..'. 'data', 'raw.csv')
+df = pd.read_csv('..', 'data', 'raw.csv')
 df = df[df['yob'] >= 1940]
 
 yob_dummies = pd.get_dummies(df['yob'], prefix='yob').astype(int)
