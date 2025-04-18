@@ -1,10 +1,9 @@
 # Imports
-import os
-import sys
-import traceback
-import importlib.util
 import numpy as np
 import pandas as pd
+import itertools
+import statsmodels.api as sm
+from linearmodels.iv import IV2SLS
 
 #1. Load data
 df = pd.read_csv('/Users/Lore/Documents/econometrics-ii-2025/assignments/ivs/data/raw.csv')
