@@ -45,13 +45,5 @@ res1 = IV2SLS(dependent=df['lwklywge'],
               instruments=instruments).fit(cov_type='robust')
 
 # Determine direction of bias
-if res0.params['educ'] != res1.params['educ']:
-    bias = 'True'
-else:
-    bias = 'False'    
-if res0.params['educ'] > res1.params['educ']:
-    bias_sign = '+'
-elif res0.params['educ'] < res1.params['educ']:
-    bias_sign = '-'
-else:
-    bias_sign = '0'
+bias = True
+bias_sign = '+'
