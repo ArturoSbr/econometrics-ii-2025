@@ -21,7 +21,7 @@ df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
 # Create interaction terms between yob and qob
 interaction_terms = []
 for year in range(1940, 1950):
-    for quarter in range(1, 4):
+    for quarter in range(1, 5):
         col_name = f'yob_{year}_qob_{quarter}'
         df[col_name] = df.get(f'yob_{year}', 0) * df.get(f'qob_{quarter}', 0)
         interaction_terms.append(col_name)
@@ -37,14 +37,18 @@ res0 = sm.OLS(y, X_naive).fit(cov_type='HC3')
 # 2SLS IV model
 exog = sm.add_constant(df[['race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
                            'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'] + yob_dummies_naive])
-instruments = df[interaction_terms]
+filtered_terms = [col for col in interaction_terms if not col.endswith('qob_4')]
+instruments = df[filtered_terms]
 res1 = IV2SLS(dependent=df['lwklywge'],
               exog=exog,
               endog=df[['educ']],
               instruments=instruments).fit(cov_type='robust')
 
 # Determine direction of bias
-bias = res0.params['educ'] != res1.params['educ']
+if res0.params['educ'] != res1.params['educ']:
+    bias = 'True'
+else:
+    bias = 'False'    
 if res0.params['educ'] > res1.params['educ']:
     bias_sign = '+'
 elif res0.params['educ'] < res1.params['educ']:
