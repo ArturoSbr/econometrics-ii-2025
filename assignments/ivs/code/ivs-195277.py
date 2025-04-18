@@ -6,6 +6,13 @@ import itertools
 from statsmodels.regression.linear_model import OLS
 from statsmodels.stats.sandwich_covariance import cov_hc3
 
+# Variables globales que usará el grader
+df = None
+res0 = None
+res1 = None
+bias = None
+bias_sign = None
+
 def load_data(file_name='raw.csv'):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     ivs_dir = os.path.dirname(script_dir)
@@ -29,7 +36,7 @@ def create_interactions(df, start_year=1940, end_year=1950):
 
 def run_naive_model(df, dependent_var='lwklywge', start_year=1940, end_year=1949):
     controls = ['const', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
-               'wnocent', 'soatl', 'esocent', 'wsocent', 'mt', 'educ']
+                'wnocent', 'soatl', 'esocent', 'wsocent', 'mt', 'educ']
     controls.extend([f'yob_{year}' for year in range(start_year, end_year)])
     return OLS(df[dependent_var], df[controls]).fit(cov_type='HC3')
 
@@ -80,3 +87,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
