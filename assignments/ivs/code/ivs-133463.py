@@ -57,4 +57,4 @@ print(res1)
 
 # Bias analysis
 bias = True
-bias_sing = '+'
+bias_sign = '+'
