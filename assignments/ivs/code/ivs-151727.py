@@ -15,7 +15,12 @@ bias_sign = None
 
 # Loads database
 def load_data(file_name='raw.csv'):
-    data_path = r'C:\Users\agonz\OneDrive\Documentos\TallerEAII\econometrics-ii-2025\assignments\ivs\data\raw.csv'
+    # Get the directory where THIS script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up one level to 'ivs' directory, then into 'data'
+    data_dir = os.path.join(script_dir, '..', 'data')
+    data_path = os.path.join(data_dir, file_name)
+    
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Data file not found at: {data_path}")
     return pd.read_csv(data_path)
