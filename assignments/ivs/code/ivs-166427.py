@@ -1,56 +1,60 @@
 import os
 import pandas as pd
-from itertools import product
-from linearmodels import IV2SLS
-import statsmodels.api as sm
 import numpy as np
+import statsmodels.api as sm
+import itertools
+from linearmodels import IV2SLS
 
-df = pd.read_csv("../data/raw.csv")
+#Load Data
+PATH = os.path.join('..', 'data', 'raw.csv')
+df = pd.read_csv(PATH)
 
-df = df.loc[df.loc[:, "yob"] >= 1940]
+#Filter (years>=1940), constant and Dummies 
+df = df[df['yob'] >= 1940]
+yob_dummies = pd.get_dummies(df['yob'], prefix='yob')
+qob_dummies = pd.get_dummies(df['qob'], prefix='qob')
+yob_dummies = yob_dummies.astype(int)
+qob_dummies = qob_dummies.astype(int)
+df = pd.concat([df, yob_dummies, qob_dummies], axis=1)
+df['const'] = 1
 
-dummies_yob = pd.get_dummies(df['yob'], prefix='yob').astype(int)
-dummies_qob = pd.get_dummies(df['qob'], prefix='qob').astype(int)
+#Interaction terms 
+year_cols = [col for col in df.columns if col.startswith('yob_')]
+quarter_cols = [col for col in df.columns if col.startswith('qob_')]
 
-df = pd.concat([df, dummies_yob, dummies_qob], axis=1)
+for year_col, quarter_col in itertools.product(year_cols, quarter_cols):
+    name = f"{year_col}_{quarter_col}"  
+    df[name] = df[[year_col, quarter_col]].prod(axis=1) 
 
-year_cols = ["yob_1940","yob_1941","yob_1942","yob_1943","yob_1944","yob_1945","yob_1946","yob_1947","yob_1948","yob_1949"]
-quarter_cols = ["qob_1","qob_2","qob_3","qob_4"]
+#OLS naive model
+formula = 'lwklywge ~ const + race + married + smsa + neweng + midatl + ' \
+          'enocent + wnocent + soatl + esocent + wsocent + mt + educ + ' \
+          'yob_1940 + yob_1941 + yob_1942 + yob_1943 + yob_1944 + yob_1945 + yob_1946 + yob_1947 + yob_1948'
 
-interactions = []
-for col in year_cols:
-    for col2 in quarter_cols:
-        new_col_name = col + "_" + col2
-        interactions.append(new_col_name)
-        df[new_col_name] = df[col] * df[col2]
+spec = sm.OLS.from_formula(formula, data=df)
+res0 = spec.fit(cov_type='HC3')
 
-control_vars = [
-    'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent', 'wnocent',
-    'soatl', 'esocent', 'wsocent', 'mt', 'educ'
-]
-year_dummies = [col for col in df.columns if col.startswith('yob_') and not col.startswith('yob_1949')]
-X = df[control_vars + year_dummies]
-X = sm.add_constant(X)
-y = df['lwklywge']
-model = sm.OLS(y, X)
-res0 = model.fit(cov_type='HC3')
+#IV2SLS 
+formula_iv = (
+    'lwklywge ~ const + race + married + smsa + neweng + midatl + enocent + '
+    'wnocent + soatl + esocent + wsocent + mt + '
+    'yob_1940 + yob_1941 + yob_1942 + yob_1943 + yob_1944 + '
+    'yob_1945 + yob_1946 + yob_1947 + yob_1948 + '
+    '[educ ~ '
+    'yob_1940_qob_1 + yob_1940_qob_2 + yob_1940_qob_3 + '
+    'yob_1941_qob_1 + yob_1941_qob_2 + yob_1941_qob_3 + '
+    'yob_1942_qob_1 + yob_1942_qob_2 + yob_1942_qob_3 + '
+    'yob_1943_qob_1 + yob_1943_qob_2 + yob_1943_qob_3 + '
+    'yob_1944_qob_1 + yob_1944_qob_2 + yob_1944_qob_3 + '
+    'yob_1945_qob_1 + yob_1945_qob_2 + yob_1945_qob_3 + '
+    'yob_1946_qob_1 + yob_1946_qob_2 + yob_1946_qob_3 + '
+    'yob_1947_qob_1 + yob_1947_qob_2 + yob_1947_qob_3 + '
+    'yob_1948_qob_1 + yob_1948_qob_2 + yob_1948_qob_3 + '
+    'yob_1949_qob_1 + yob_1949_qob_2 + yob_1949_qob_3]'
+)
+spec2 = IV2SLS.from_formula(formula_iv, data=df)
+res1 = spec2.fit()
 
-yob_qob_to_drop = [col for col in df.columns if col.endswith("qob_4")]
-df = df.drop(columns=yob_qob_to_drop)
-
-controls = [
-    'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent', 'wnocent',
-    'soatl', 'esocent', 'wsocent', 'mt'
-]
-
-year_dummies = [col for col in df.columns if col.startswith('yob_') and not col.startswith('yob_1949') and not col in interactions]
-instrument_dummies = [col for col in df.columns if not col.endswith("qob_4") and col in interactions]
-exog = sm.add_constant(df[controls + year_dummies])
-endog = df['educ']
-instruments = df[instrument_dummies]
-dep = df['lwklywge']
-res1 = IV2SLS(dependent=dep, exog=exog, endog=endog, instruments=instruments).fit(cov_type='robust')
-
+#Declare Bias 
 bias = True
-
 bias_sign = '+'
