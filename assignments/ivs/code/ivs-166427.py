@@ -25,7 +25,7 @@ for yob_col, qob_col in interaction_terms:
 
 # Variables de control
 controls = [
-    'educ', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+    'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
     'wnocent', 'soatl', 'esocent', 'wsocent', 'mt'
 ]
 
