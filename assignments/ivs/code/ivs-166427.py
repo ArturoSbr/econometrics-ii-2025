@@ -3,6 +3,7 @@ import pandas as pd
 from itertools import product
 from linearmodels import IV2SLS
 import statsmodels.api as sm
+import numpy as np
 
 df = pd.read_csv("../data/raw.csv")
 
