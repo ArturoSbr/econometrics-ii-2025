@@ -5,7 +5,6 @@ from linearmodels import IV2SLS
 import statsmodels.api as sm
 
 # Cargar los datos
-
 PATH = os.path.join('..', 'data', 'raw.csv')
 df = pd.read_csv(PATH)
 
