@@ -53,7 +53,7 @@ X = sm.add_constant(X)
 model = sm.OLS(y, X).fit(cov_type='HC3')  # HC3 para errores estándar robustos
 
 # Almacenar los resultados en 'res0'
-res0 = model.summary()
+res0 = model.fit()
 
 # Crear la lista de interacciones como instrumentos, omitiendo el último trimestre de cada año
 instrument_cols = []
