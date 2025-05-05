@@ -85,7 +85,7 @@ endog = df['educ']
 iv_model = IV2SLS(dependent=y, exog=X_iv, endog=endog, instruments=instruments).fit()
 
 # Almacenar los resultados en 'res1'
-res1 = iv_model.summary
+res1 = iv_model.summary()
 
 bias = True
 
