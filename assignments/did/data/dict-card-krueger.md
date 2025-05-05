@@ -18,31 +18,33 @@ counterintuitive result is often referred to as the Card-Krueger paradox.
 
 ## Columns
 The file `../data/card-krueger.csv` contains the raw data of the original paper (with
-some minor changes, such as replacing `'.'` with `null`, etc.). The following lists
-describe the meaning of each column:
+some minor changes, such as replacing `'.'` with `null`, and converting the data from
+wide to longitudinal fromat). The following lists describe the meaning of each column:
 
-### General columns
-- `sheet`: sheet number (unique store id)
-- `chain`: chain 1=bk; 2=kfc; 3=roys; 4=wendys
+- `i`: unique store id
+- `t`: time period (0=before policy, 1=after policy)
+- `chain`: chain (1=bk; 2=kfc; 3=roy's; 4=wendy's)
 - `co_owned`: 1 if company owned
-- `state`: 1 if NJ; 0 if Pa
-- `southj`: 1 if in southern NJ
-- `centralj`: 1 if in central NJ
-- `northj`: 1 if in northern NJ
-- `pa1`: 1 if in PA, northeast suburbs of Philadelphia
-- `pa2`: 1 if in PA, Easton, etc
-- `shore`: 1 if on NJ shore
-
-### First interview
-- `ncalls`: number of call-backs (0 if contacted on first call)
+- `state`: 1 if NJ; 0 if PA
+- `nj_south`: 1 if in southern NJ
+- `nj_central`: 1 if in central NJ
+- `nj_north`: 1 if in northern NJ
+- `nj_shore`: 1 if on NJ shore
+- `pa_1`: 1 if in PA, northeast suburbs of Philadelphia
+- `pa_2`: 1 if in PA, Easton, etc
+- `type_1`: type of second interview (1=phone; 2=personal)
+- `status_1`: status of second interview (0=refused, 1=answered, 2=renovation, 3=closed,
+4=construction, 5=fire)
+- `special`: 1 if special program for new workers
+- `bonus`: 1 if cash bounty for new workers
+- `pctaff`: % employees affected by new minimum wage
+- `ncalls`: number of call-backs
 - `empft`: number of full-time employees
 - `emppt`: number of part-time employees
 - `nmgrs`: number of managers/assistant managers
-- `wage_st`: starting wage ($/hr)
+- `wagest`: starting wage ($/hr)
 - `inctime`: months to usual first raise
 - `firstinc`: usual amount of first raise ($/hr)
-- `bonus`: 1 if cash bounty for new workers
-- `pctaff`: % employees affected by new minimum wage
 - `meals`: free/reduced price meals (0=none, 1=free, 2=reduced, 3=both)
 - `open`: hour of opening
 - `hrsopen`: number of hours open per day
@@ -52,24 +54,55 @@ describe the meaning of each column:
 - `nregs`: number of cash registers in store
 - `nregs11`: number of registers open at 11:00 am
 
-### Second interview
-- `type2`: type of second interview (1=phone; 2=personal)
-- `status2`: status of second interview (0=refused, 1=answered, 2=renovation, 3=closed,
-4=construction, 5=fire)
-- `date2`: date of second interview (MMDDYY format)
-- `ncalls2`: number of call-backs (2nd interview)
-- `empft2`: number of full-time employees (2nd interview)
-- `emppt2`: number of part-time employees (2nd interview)
-- `nmgrs2`: number of managers/assistant managers (2nd interview)
-- `wage_st2`: starting wage ($/hr) (2nd interview)
-- `inctime2`: months to usual first raise (2nd interview)
-- `firstin2`: usual amount of first raise ($/hr) (2nd interview)
-- `special2`: 1 if special program for new workers
-- `meals2`: free/reduced price meals (same codes as above)
-- `open2r`: hour of opening (2nd interview)
-- `hrsopen2`: number of hours open per day (2nd interview)
-- `psoda2`: price of medium soda, including tax (2nd interview)
-- `pfry2`: price of small fries, including tax (2nd interview)
-- `pentree2`: price of entree, including tax (2nd interview)
-- `nregs2`: number of cash registers (2nd interview)
-- `nregs112`: number of registers open at 11:00 am (2nd interview)
+The data is presented in long format, with two rows per store (one for each time
+period).
+
+## Transformation
+The [original dataset](https://davidcard.berkeley.edu/data_sets/njmin.zip) is presented
+in wide format (one row per store with two columns for each feature). The following code
+was used to transform the original dataset to the file presented in this repo.
+
+```python
+# Load data
+df = pd.read_csv('public.dat', sep='\s+', header=None)
+
+# Rename columns
+df.columns = [
+    'i', 'chain', 'co_owned', 'state',
+    'nj_south', 'nj_central', 'nj_north', 'pa_1', 'pa_2', 'nj_shore',
+    'ncalls_0', 'empft_0', 'emppt_0', 'nmgrs_0', 'wagest_0', 'inctime_0',
+    'firstinc_0', 'bonus', 'pctaff', 'meals_0', 'open_0', 'hrsopen_0',
+    'psoda_0', 'pfry_0', 'pentree_0', 'nregs_0', 'nregs11_0',
+    'type_1', 'status_1', 'date_1', 'ncalls_1', 'empft_1', 'emppt_1',
+    'nmgrs_1', 'wagest_1', 'inctime_1', 'firstinc_1', 'special',
+    'meals_1', 'open_1', 'hrsopen_1', 'psoda_1', 'pfry_1',
+    'pentree_1', 'nregs_1', 'nregs11_1'
+]
+
+# Drop duplicated store
+df = df[df['i'] != 407]
+
+# Cast columns to correct data types
+cols_str = list(df.dtypes[df.dtypes == object].index)
+df[cols_str] = df[cols_str].replace('.', 'NaN').astype(float)
+
+# Drop columns
+df = df.drop(columns=['date_1'])
+
+# Wide to long transformation
+cols_varying = [
+    'ncalls', 'empft', 'emppt', 'nmgrs', 'wagest', 'inctime', 'firstinc', 
+    'meals', 'open', 'hrsopen', 'psoda', 'pfry', 'pentree', 'nregs', 'nregs11'
+]
+df = pd.wide_to_long(
+    df=df,
+    stubnames=cols_varying,
+    i='i',
+    j='t',
+    sep='_',
+    suffix='(0|1)'
+).reset_index().sort_values(['i', 't'])
+
+# Write data
+df.to_csv('card-krueger.csv', index=False)
+```
