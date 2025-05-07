@@ -52,9 +52,8 @@ Estimate the model
 
 $$
     Y_{it} = \alpha_i + \lambda_t +
-    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1} \{
-        t - G_i = k
-    \} + \varepsilon_{it}
+    \sum_{k=k_{min}}^{k_{max}} \beta_k \mathbf{1}
+    \{t - G_i = k\} + \varepsilon_{it}
 $$
 
 - Use only the treated population (hint: use a mask)
@@ -89,9 +88,8 @@ Estimate the model
 
 $$
     Y_{it} = \alpha_i + \lambda_t +
-    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1} \{
-        t - G_i = k
-    \} + \varepsilon_{it}
+    \sum_{k=k_{min}}^{k_{max}} \beta_k \mathbf{1}
+    \{t - G_i = k\} + \varepsilon_{it}
 $$
 
 - Use `lemp` as the dependent variable
