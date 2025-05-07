@@ -52,9 +52,9 @@ Estimate the model
 
 $$
     Y_{it} = \alpha_i + \lambda_t +
-    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1}\big\{
+    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1} \{
         t - G_i = k
-    \big\} + \varepsilon_{it}
+    \} + \varepsilon_{it}
 $$
 
 - Use only the treated population (hint: use a mask)
@@ -86,11 +86,12 @@ such that $\mathit{R} \beta = [0, 0, 0]^T$
 10. ATT (all units)
 
 Estimate the model
+
 $$
     Y_{it} = \alpha_i + \lambda_t +
-    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1}\big\{
+    \sum_{k=k_{min}}^{k_{max}} \beta_k \cdot \mathbf{1} \{
         t - G_i = k
-    \big\} + \varepsilon_{it}
+    \} + \varepsilon_{it}
 $$
 
 - Use `lemp` as the dependent variable
