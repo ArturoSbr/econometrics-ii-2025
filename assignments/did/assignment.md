@@ -1,4 +1,4 @@
-# Difference-in-Differences Assignment
+# Difference-in-Differences Assignment
 
 ## Before you start
 1. Switch to branch `develop` (`git checkout develop`)
