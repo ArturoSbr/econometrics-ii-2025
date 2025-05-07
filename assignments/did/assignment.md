@@ -3,8 +3,8 @@
 ## Before you start
 1. Switch to branch `develop` (`git checkout develop`)
 2. Update the branch (`git pull`)
-3. Create your own branch (`git checkout -b assignment/did-<your-id-here>)
-4. Save your solution in `./assignments/did/code/did-<your-id-here>
+3. Create your own branch (`git checkout -b assignment/did-<your-id-here>`)
+4. Save your solution in `./assignments/did/code/did-<your-id-here>`
 5. Add and commit your python file
 6. Push your python file to your branch (`git push`)
 
