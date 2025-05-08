@@ -36,7 +36,8 @@ Set columns `i` and `t` as the index for `df` (in that order!).
 
 5. Create dummies for event periods
 
-One-hot encode column `k` into multiple columns with `pd.get_dummies` of type `int`:
+One-hot encode column `k` into multiple columns with `pd.get_dummies` of type `int` and
+make sure you set `dummy_na=True`:
 - `'k_-4.0'`
 - `'k_-3.0'`
 - `'k_-2.0'`
@@ -45,6 +46,7 @@ One-hot encode column `k` into multiple columns with `pd.get_dummies` of type `i
 - `'k_1.0'`
 - `'k_2.0'`
 - `'k_3.0'`
+- `'k_nan'` $\leftarrow$ remember to set `dummy_na=True`!!!
 
 6. ATT (only treated counties)
 
