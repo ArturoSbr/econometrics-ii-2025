@@ -3,61 +3,49 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
-# Cargar datos
-archivo = os.path.join('..', 'data', 'callaway-santanna.csv')
-datos = pd.read_csv(archivo)
+archivo_datos = os.path.join('..', 'data', 'callaway-santanna.csv')
+datos_panel = pd.read_csv(archivo_datos)
 
-# Renombrar columnas
-datos.rename(columns={
-    'year': 'tiempo',
-    'countyreal': 'unidad',
-    'first.treat': 'trat_ini'
+datos_panel.rename(columns={
+    'year': 'anio',
+    'countyreal': 'region_id',
+    'first.treat': 'inicio_tratamiento'
 }, inplace=True)
 
-# Crear variable evento
-datos.loc[datos['trat_ini'] == 0, 'trat_ini'] = np.nan
-datos['evento'] = datos['tiempo'] - datos['trat_ini']
-datos.set_index(['unidad', 'tiempo'], inplace=True)
+datos_panel.loc[datos_panel['inicio_tratamiento'] == 0, 'inicio_tratamiento'] = np.nan
+datos_panel['periodo_evento'] = datos_panel['anio'] - datos_panel['inicio_tratamiento']
+datos_panel.set_index(['region_id', 'anio'], inplace=True)
 
-# Crear dummies de evento (sin kk_nan)
-dummies_k = pd.get_dummies(datos['evento'], prefix='kk', dtype=int)
-datos = datos.join(dummies_k)
+dummies_evento = pd.get_dummies(datos_panel['periodo_evento'], prefix='evento', dummy_na=True, dtype=int)
+datos_panel = datos_panel.join(dummies_evento)
 
-# Filtrar unidades tratadas y con panel completo
-tratadas = datos['trat_ini'].notna()
-panel_completo = ~datos['lemp'].isna().groupby(level='unidad').any()
-ids_validas = panel_completo[panel_completo].index
-seleccion = tratadas & datos.index.get_level_values('unidad').isin(ids_validas)
-datos_filtrados = datos[seleccion].copy()
+es_tratada = datos_panel['inicio_tratamiento'].notna()
+panel_completo = ~datos_panel['lemp'].isna().groupby(level='region_id').any()
+regiones_validas = panel_completo[panel_completo].index
+filtrado = es_tratada & datos_panel.index.get_level_values('region_id').isin(regiones_validas)
+datos_tratadas = datos_panel[filtrado].copy()
 
-# Modelo 1 (filtrado)
-columnas_k = [c for c in datos_filtrados.columns if c.startswith('kk_') and c != 'kk_-1.0']
-columnas_k = [c for c in columnas_k if datos_filtrados[c].nunique() > 1]
-X1 = datos_filtrados[columnas_k]
+columnas_evento = [col for col in datos_tratadas.columns if col.startswith('evento_') and col != 'evento_-1.0']
+columnas_evento = [col for col in columnas_evento if datos_tratadas[col].nunique() > 1]
+X_treat = datos_tratadas[columnas_evento]
 
-modelo1 = PanelOLS(datos_filtrados['lemp'], X1, entity_effects=True, time_effects=True, drop_absorbed=True)
-res0 = modelo1.fit(cov_type='clustered')
+modelo_tratadas = PanelOLS(datos_tratadas['lemp'], X_treat, entity_effects=True, time_effects=True, drop_absorbed=True)
+resultados_tratadas = modelo_tratadas.fit(cov_type='clustered')
 
-R0 = np.identity(len(X1.columns))[:3]
-r0 = np.zeros(3)
-f0 = res0.wald_test(R0, r0)
+restriccion_treat = np.identity(len(resultados_tratadas.params))[:3]
+valores_nulos = np.zeros((3, 1))
+test_f0 = resultados_tratadas.wald_test(restriccion_treat, valores_nulos)
 
-anticipacion0 = f0.pval < 0.05
-efecto0 = '+' if res0.params.mean() > 0 else '-'
+anticipacion0 = test_f0.pval < 0.05
+efecto_estimado0 = '+' if resultados_tratadas.params.mean() > 0 else '-'
 
-# Modelo 2 (datos sin filtrar, pero con limpieza de columnas válidas)
-columnas_k_global = [c for c in datos.columns if c.startswith('kk_') and c != 'kk_-1.0']
-columnas_k_global = [c for c in columnas_k_global if datos[c].nunique() > 1]
-X2 = datos[columnas_k_global]
+columnas_evento_full = [col for col in datos_panel.columns if col.startswith('evento_') and col != 'evento_-1.0' and datos_panel[col].nunique() > 1]
+modelo_completo = PanelOLS(datos_panel['lemp'], datos_panel[columnas_evento_full], entity_effects=True, time_effects=True, drop_absorbed=True)
+resultados_completos = modelo_completo.fit(cov_type='clustered')
 
-modelo2 = PanelOLS(datos['lemp'], X2, entity_effects=True, time_effects=True, drop_absorbed=True)
-res1 = modelo2.fit(cov_type='clustered')
+restriccion_all = np.identity(len(resultados_completos.params))[:3]
+valores_nulos_all = np.zeros((3, 1))
+test_f1 = resultados_completos.wald_test(restriccion_all, valores_nulos_all)
 
-# Verificamos qué columnas están en el modelo realmente (algunas pueden ser absorbidas)
-k_real = len(res1.params)
-R1 = np.identity(k_real)[:3]
-r1 = np.zeros(3)
-
-f1 = res1.wald_test(R1, r1)
-anticipacion1 = f1.pval < 0.05
-efecto1 = '+' if res1.params.mean() > 0 else '-'
+anticipacion1 = test_f1.pval < 0.05
+efecto_estimado1 = '+' if resultados_completos.params.mean() > 0 else '-'
