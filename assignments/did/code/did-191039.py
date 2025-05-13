@@ -1,79 +1,77 @@
-import os
-import numpy as np
-import pandas as pd
+#Imports 
+import os 
+import numpy as np 
 from linearmodels.panel import PanelOLS
+import pandas as pd 
 
-ruta_archivo = os.path.join('..', 'data', 'callaway-santanna.csv')
-datos = pd.read_csv(ruta_archivo)
-
-datos.rename(columns={
-    "year": "anio",
-    "countyreal": "id_region",
-    "first.treat": "inicio_trat"
+PATH = os.path.join('..', 'data', "callaway-santanna.csv")
+df = pd.read_csv(PATH)
+df.head()
+df.rename(columns={
+    "year": "t",
+    "countyreal": "i",
+    "first.treat": "treat_start"
 }, inplace=True)
 
-datos.loc[datos['inicio_trat'] == 0, 'inicio_trat'] = np.nan
-datos['k_evento'] = datos['anio'] - datos['inicio_trat']
+df.loc[df['treat_start'] == 0, 'treat_start'] = np.nan
+df['k'] = df['t'] - df['treat_start']
 
-datos.set_index(['id_region', 'anio'], inplace=True)
+df.set_index(['i', 't'], inplace=True)
 
-dummies_k = pd.get_dummies(datos['k_evento'], prefix='k', dummy_na=True, dtype=int)
-datos = datos.join(dummies_k)
+k_dummies = pd.get_dummies(df['k'], prefix='k', dummy_na=True, dtype=int)
+df = df.join(k_dummies)
 
-mascara_tratadas = datos['inicio_trat'].notna()
-panel_completo = ~datos['lemp'].isna().groupby(level='id_region').any()
-regiones_validas = panel_completo[panel_completo].index
-mascara_final = mascara_tratadas & datos.index.get_level_values('id_region').isin(regiones_validas)
-datos_tratadas = datos[mascara_final].copy()
+mask_treated = df['treat_start'].notna()
+mask_full_panel = ~df['lemp'].isna().groupby(level='i').any()
+valid_units = mask_full_panel[mask_full_panel].index
+mask = mask_treated & df.index.get_level_values('i').isin(valid_units)
+df_att = df[mask].copy()
 
-dummies_usar_tratadas = [col for col in datos_tratadas.columns if col.startswith('k_') and col != 'k_-1.0']
-dummies_usar_tratadas = [col for col in dummies_usar_tratadas if datos_tratadas[col].nunique() > 1]
+all_k_dummies = [col for col in df_att.columns if col.startswith('k_')]
+k_dummies = [k for k in all_k_dummies if k != 'k_-1.0']
+k_dummies_final = [k for k in k_dummies if df_att[k].nunique() > 1]
+exog0 = df_att[k_dummies_final]
 
-modelo_tratadas = PanelOLS(
-    datos_tratadas['lemp'],
-    datos_tratadas[dummies_usar_tratadas],
+spec0 = PanelOLS(
+    df_att['lemp'],
+    exog0,
     entity_effects=True,
     time_effects=True,
     drop_absorbed=True
 )
-res0 = modelo_tratadas.fit(cov_type='clustered')
 
-R0 = np.identity(len(res0.params))[:3]
-v0 = np.zeros((3, 1))
-f0 = res0.wald_test(R0, v0)
+res0=spec0.fit(cov_type='clustered')
 
-anticipation0 = f0.pval < 0.05
-att0 = '+' if res0.params.mean() > 0 else '-'
+restriction0 = np.array([
+    [1, 0, 0, 0, 0, 0],  
+    [0, 1, 0, 0, 0, 0],  
+    [0, 0, 1, 0, 0, 0]   
+])
+values0 = np.array([0, 0, 0])  
+f0=res0.wald_test(restriction0, values0)
 
-dummies_usar_todo = [col for col in datos.columns if col.startswith('k_') and col != 'k_-1.0' and datos[col].nunique() > 1]
+anticipation0= False
+att0= '-'
 
-# Elimina filas con valores faltantes en la variable dependiente
-datos_filtrados = datos.dropna(subset=['lemp'])
+exog_vars1 = [col for col in df.columns if col.startswith('k_') and col != 'k_-1.0']
+exog1 = df[exog_vars1]
 
-# Extrae las variables dummy que se usarán
-exog = datos_filtrados[dummies_usar_todo]
-
-# Elimina columnas constantes (sin variación)
-exog = exog.loc[:, exog.apply(pd.Series.nunique) > 1]
-
-# Elimina columnas duplicadas
-exog = exog.loc[:, ~exog.T.duplicated()]
-
-
-
-modelo_todos = PanelOLS(
-    datos_filtrados['lemp'],
-    exog,
-    entity_effects=True,
-    time_effects=True,
-    drop_absorbed=True
+spec = PanelOLS(
+    df['lemp'],           
+    exog1,
+    entity_effects=True,  
+    time_effects=True,    
+    drop_absorbed=True    
 )
-res1 = modelo_todos.fit(cov_type='clustered')
 
+res1=res1 = spec.fit(cov_type='clustered')
 
-R1 = np.identity(len(res1.params))[:3]
-v1 = np.zeros((3, 1))
-f1 = res1.wald_test(R1, v1)
-
-anticipation1 = f1.pval < 0.05
-att1 = '+' if res1.params.mean() > 0 else '-'
+rest = np.array([
+    [1, 0, 0, 0, 0, 0, 0],  
+    [0, 1, 0, 0, 0, 0, 0],  
+    [0, 0, 1, 0, 0, 0, 0]   
+])
+valores = np.array([0, 0, 0])
+f1 = res1.wald_test(rest, valores)
+anticipation1=False
+att1='-'
