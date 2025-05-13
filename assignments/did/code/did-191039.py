@@ -47,14 +47,29 @@ att0 = '+' if res0.params.mean() > 0 else '-'
 
 dummies_usar_todo = [col for col in datos.columns if col.startswith('k_') and col != 'k_-1.0' and datos[col].nunique() > 1]
 
+# Elimina filas con valores faltantes en la variable dependiente
+datos_filtrados = datos.dropna(subset=['lemp'])
+
+# Extrae las variables dummy que se usarán
+exog = datos_filtrados[dummies_usar_todo]
+
+# Elimina columnas constantes (sin variación)
+exog = exog.loc[:, exog.apply(pd.Series.nunique) > 1]
+
+# Elimina columnas duplicadas
+exog = exog.loc[:, ~exog.T.duplicated()]
+
+
+
 modelo_todos = PanelOLS(
-    datos['lemp'],
-    datos[dummies_usar_todo],
+    datos_filtrados['lemp'],
+    exog,
     entity_effects=True,
     time_effects=True,
     drop_absorbed=True
 )
 res1 = modelo_todos.fit(cov_type='clustered')
+
 
 R1 = np.identity(len(res1.params))[:3]
 v1 = np.zeros((3, 1))
