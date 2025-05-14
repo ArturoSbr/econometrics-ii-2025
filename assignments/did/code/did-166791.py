@@ -51,7 +51,7 @@ m1 = PanelOLS(
 )
 res1 = m1.fit(
     cov_type       = 'clustered',
-    cluster_entity = True
+    #cluster_entity = True
 )
 R = np.zeros((3, 7))
 R[0, 0] = 1  
