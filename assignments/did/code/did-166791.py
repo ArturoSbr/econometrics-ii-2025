@@ -31,7 +31,7 @@ m0 = PanelOLS(
 )
 res0 = m0.fit(
     cov_type       = 'clustered',
-    cluster_entity = True
+    #cluster_entity = True 
 )
 R = np.zeros((3, 6))
 R[0, 0] = 1   
@@ -40,7 +40,7 @@ R[2, 2] = 1
 values = np.zeros(3)
 f0 = res0.wald_test(R, values)
 anticipation0 = False
-att0 = '+'
+att0 = '-'
 event_cols = [col for col in df.columns if col.startswith('k_') and col != 'k_-1.0']
 m1 = PanelOLS(
     dependent      = df['lemp'],
