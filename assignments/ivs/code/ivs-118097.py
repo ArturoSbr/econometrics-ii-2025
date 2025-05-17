@@ -88,16 +88,15 @@ print(res0.summary())
 # 2. Run IV2SLS model
 # Prepare instruments: interactions between yob and qob
 # For each year, we'll exclude the 4th quarter as reference
-instruments = []
-for year in range(1940, 1950):  # 1940-1949
-    if year == 1949:  # Skip reference year
-        continue
-    
-    for quarter in range(1, 4):  # Only include quarters 1-3 (exclude 4 as reference)
-        instruments.append(f'yob_{year}_qob_{quarter}')
+
 
 # Define exogenous variables (same as controls but without educ)
-exog_vars = [var for var in all_controls if var != 'educ']
+exog_vars = ['const', 'race', 'married', 'smsa', 'neweng', 'midatl', 'enocent',
+            'wnocent', 'soatl', 'esocent', 'wsocent', 'mt']
+exog_vars.extend([f'yob_{year}' for year in range(1940, 1949)])
+instruments = [f'yob_{year}_qob_{quarter}' 
+                   for year in range(1940, 1950)
+                   for quarter in range(1, 4)]
 
 # Run IV2SLS regression
 formula = {"dependent": df['lwklywge'], 
@@ -106,7 +105,7 @@ formula = {"dependent": df['lwklywge'],
            "instruments": df[instruments]}
 
 iv_model = IV2SLS(**formula)
-res1 = iv_model.fit()
+res1 = iv_model.fit(cov_type='robust')
 
 print("\nIV2SLS Model Results:")
 print(res1.summary)
