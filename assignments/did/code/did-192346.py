@@ -58,7 +58,7 @@ modelo = PanelOLS(
     drop_absorbed=True
 )
 
-res0=spec0.fit(cov_type='clustered')
+res0=modelo.fit(cov_type='clustered')
 
 ###Check for anticipated effects WALD TEST
 n_coefs = len(res0.params)
