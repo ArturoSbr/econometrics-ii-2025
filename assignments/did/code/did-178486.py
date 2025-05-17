@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 # 1. Leer data 
-PATH = os.path.join('assignments', 'did', 'data', 'callaway-santanna.csv')
+PATH = os.path.join("..", "data", "callaway-santanna.csv")
 df = pd.read_csv(PATH)
 print(df.head())
 
