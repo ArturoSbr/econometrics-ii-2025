@@ -63,7 +63,7 @@ X_all = df[event_cols_all]
 y_all = df['lemp']
 
 model1 = PanelOLS(y_all, X_all, entity_effects=True, time_effects=True, drop_absorbed=True)
-res1 = model1.fit(cov_type='clustered', cluster_entity=True)
+res1 = model1.fit(cov_type='clustered')
 
 # Wald Test all
 restriction1 = np.array([
