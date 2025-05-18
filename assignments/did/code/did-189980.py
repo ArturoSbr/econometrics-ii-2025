@@ -1,4 +1,4 @@
-import os as pd
+import os
 import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
