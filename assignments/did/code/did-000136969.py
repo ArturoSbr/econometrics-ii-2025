@@ -4,7 +4,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 # 1. Load data
-data_path = os.path.join('assignments', 'did', 'data', 'callaway_santanna.csv')
+data_path = os.path.join('assignments', 'did', 'data', 'callaway-santanna.csv')
 df = pd.read_csv(data_path)
 
 # 2. Rename columns
