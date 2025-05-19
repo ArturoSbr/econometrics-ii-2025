@@ -4,8 +4,7 @@ import pandas as pd
 from linearmodels.panel import PanelOLS
 
 # 1. Load data
-# Como estamos en assignments/did/code, subimos un nivel (..) y vamos a data/
-data_path = os.path.join('..', 'data', 'callaway-santanna.csv')
+data_path = os.path.join('assignments', 'did', 'data', 'callaway_santanna.csv')
 df = pd.read_csv(data_path)
 
 # 2. Rename columns
@@ -16,13 +15,17 @@ df = df.rename(columns={
 })
 
 # 3. Declare new time column k
+#    – set treat_start = NaN for never‐treated
 df['treat_start'] = df['treat_start'].replace(0, np.nan)
+#    – define k = t − treat_start
 df['k'] = df['t'] - df['treat_start']
 
 # 4. Set multi‐index (i, t)
 df = df.set_index(['i', 't'])
 
-# 5. Create dummies for event periods (incluye nan)
+# 5. Create dummies for each event‐time (including NaN)
 dummies = pd.get_dummies(df['k'], prefix='k', dummy_na=True).astype(int)
 df = pd.concat([df, dummies], axis=1)
+
+# Identify all the event‐dummy columns
 event_cols = sorted(c for c in df.columns if c.startswith('k_'))
