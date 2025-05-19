@@ -6,7 +6,8 @@ import statsmodels.api as sm
 from linearmodels.panel import PanelOLS
 
 #Q1 importar datos
-df = pd.read_csv('../did/data/callaway-santanna.csv')
+PATH = os.path.join('..', 'data', "callaway-santanna.csv")
+df = pd.read_csv(PATH)
 
 #Q2 Renombrar columnas
 df = df.rename(columns = {'year': 't',
