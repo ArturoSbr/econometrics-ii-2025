@@ -62,13 +62,13 @@ v0 = np.zeros(3)
 f0 = res0.wald_test(R0, v0)
 print('Wald f0:', f0)
 
-# Q8. Anticipation effects?
+# Q8.
 anticipation0 = False
 
-# Q9. Sign of ATT?
+# Q9. 
 att0 = '-'
 
-# Q10. ATT (all units)
+# Q10. ATT 
 k_cols1 = [c for c in df.columns if c.startswith('k_') and c != 'k_-1.0']
 ex1 = df[k_cols1]
 
@@ -82,7 +82,7 @@ spec1 = PanelOLS(
 res1 = spec1.fit(cov_type='clustered')
 print(res1.summary)
 
-# Q11. Wald test H0: β₋₄ = β₋₃ = β₋₂ = 0 (all units)
+# Q11. 
 R1 = np.array([
     [1, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 0, 0, 0, 0],
@@ -92,8 +92,8 @@ v1 = np.zeros(3)
 f1 = res1.wald_test(R1, v1)
 print('Wald f1:', f1)
 
-# Q12. Anticipation effects?
+# Q12. 
 anticipation1 = False
 
-# Q13. Sign of ATT?
+# Q13. 
 att1 = '-'
