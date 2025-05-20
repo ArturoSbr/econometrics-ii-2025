@@ -1,59 +1,99 @@
-import os
+# Q0. Imports
 import numpy as np
 import pandas as pd
 from linearmodels.panel import PanelOLS
 
-# 1. Load data
+# Q1. Load data
 df = pd.read_csv('../data/callaway-santanna.csv')
+print(df.head())
 
-# 2. Rename columns
+# Q2. Rename columns: year→t, countyreal→i, first.treat→treat_start
 df = df.rename(columns={
     'year': 't',
     'countyreal': 'i',
     'first.treat': 'treat_start'
 })
+print(df.head())
 
-# 3. Declare new time column k
-#    – set treat_start = NaN for never‐treated
-df['treat_start'] = df['treat_start'].replace(0, np.nan)
-#    – define k = t − treat_start
-df['k'] = df['t'] - df['treat_start']
+# Q3. Declare event‐time k
+df['treat_start'] = df['treat_start'].replace(0, np.nan)      # never‐treated → NaN
+df['k'] = df['t'] - df['treat_start']                         # k = t − treat_start
+print(df.head())
 
-# 4. Set multi‐index (i, t)
+# Q4. Set multi‐index (i, t)
 df = df.set_index(['i', 't'])
+print(df.head())
 
-# 5. Create dummies for each event‐time (including NaN)
-dummies = pd.get_dummies(df['k'], prefix='k', dummy_na=True).astype(int)
-df = pd.concat([df, dummies], axis=1)
+# Q5. Create dummies for each event‐time (including NaN)
+kd = pd.get_dummies(df['k'], prefix='k', dummy_na=True).astype(int)
+df = df.join(kd)
 
-# Identify all the event‐dummy columns
-event_cols = sorted(c for c in df.columns if c.startswith('k_'))
+# Q6. ATT (only treated & balanced panel)
+mt = df['treat_start'].notna()                                # mask: treated
+mf = ~df['lemp'].isna().groupby(level='i').any()               # mask: balanced (no missing lemp)
+valid_ids = mf[mf].index
+mask0 = mt & df.index.get_level_values('i').isin(valid_ids)
+df0 = df[mask0].copy()
 
-import os
-import numpy as np
-import pandas as pd
-from linearmodels.panel import PanelOLS
+# select event‐time dummies excluding reference k_-1.0 and zero‐var columns
+k_cols0 = [
+    c for c in df0.columns
+    if c.startswith('k_') and c != 'k_-1.0' and df0[c].nunique() > 1
+]
+ex0 = df0[k_cols0]
 
-# 1. Load data
-# Como estamos en assignments/did/code, subimos un nivel (..) y vamos a data/
-data_path = os.path.join('..', 'data', 'callaway-santanna.csv')
-df = pd.read_csv(data_path)
+spec0 = PanelOLS(
+    df0['lemp'],
+    ex0,
+    entity_effects=True,
+    time_effects=True,
+    drop_absorbed=True
+)
+res0 = spec0.fit(cov_type='clustered')
+print(res0.summary)
 
-# 2. Rename columns
-df = df.rename(columns={
-    'year': 't',
-    'countyreal': 'i',
-    'first.treat': 'treat_start'
-})
+# Q7. Wald test H0: β₋₄ = β₋₃ = β₋₂ = 0
+R0 = np.array([
+    [1, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0]
+])
+v0 = np.zeros(3)
+f0 = res0.wald_test(R0, v0)
+print('Wald f0:', f0)
 
-# 3. Declare new time column k
-df['treat_start'] = df['treat_start'].replace(0, np.nan)
-df['k'] = df['t'] - df['treat_start']
+# Q8. Anticipation effects?
+anticipation0 = False
 
-# 4. Set multi‐index (i, t)
-df = df.set_index(['i', 't'])
+# Q9. Sign of ATT?
+att0 = '-'
 
-# 5. Create dummies for event periods (incluye nan)
-dummies = pd.get_dummies(df['k'], prefix='k', dummy_na=True).astype(int)
-df = pd.concat([df, dummies], axis=1)
-event_cols = sorted(c for c in df.columns if c.startswith('k_'))
+# Q10. ATT (all units)
+k_cols1 = [c for c in df.columns if c.startswith('k_') and c != 'k_-1.0']
+ex1 = df[k_cols1]
+
+spec1 = PanelOLS(
+    df['lemp'],
+    ex1,
+    entity_effects=True,
+    time_effects=True,
+    drop_absorbed=True
+)
+res1 = spec1.fit(cov_type='clustered')
+print(res1.summary)
+
+# Q11. Wald test H0: β₋₄ = β₋₃ = β₋₂ = 0 (all units)
+R1 = np.array([
+    [1, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0]
+])
+v1 = np.zeros(3)
+f1 = res1.wald_test(R1, v1)
+print('Wald f1:', f1)
+
+# Q12. Anticipation effects?
+anticipation1 = False
+
+# Q13. Sign of ATT?
+att1 = '-'
